@@ -1,0 +1,2 @@
+[Tue May 14 19:13:29.269377 2013] [:error] [pid 2276:tid 1692] [client 127.0.0.1:51741] script 'C:/xampp/htdocs/projects/smk/newdefect.php' not found or unable to stat, referer: http://smk/index.php?r=DefectsBook/index
+[Tue May 14 19:13:54.099798 2013] [:error] [pid 2276:tid 1688] [client 127.0.0.1:51744] script 'C:/xampp/htdocs/projects/smk/newdefect.php' not found or unable to stat, referer: http://smk/index.php?r=DefectsBook/index

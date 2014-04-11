@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Devart (www.devart.com), Master-detail document file -->
+<!-- Modifying this generated file will probably render it invalid -->
+<Document>
+  <Properties>
+    <Type>Master-detail Document</Type>
+    <DatabaseProvider>59f90733-4d68-4fdf-82a7-f0fcbf5460aa</DatabaseProvider>
+    <ProviderVersion>6.0.189.1</ProviderVersion>
+    <SchemaVersion>1.0</SchemaVersion>
+  </Properties>
+  <Connection Name="smk.172.16.23.12">
+    <ConnectionString>User Id=smk;Host=172.16.23.12;Database=smk;Character Set=utf8</ConnectionString>
+  </Connection>
+  <Views ShowAdditionalViews="True" IsLayoutActiveAttribute="False" MainViewAttribute="Design" MainViewScale="75">
+    <View Name="Design" Active="True" Visible="True">
+      <Data>
+        <Properties LocationX="6.89655168633871" LocationY="-78.1609191118387" Scale="0.87" />
+        <Tables>
+          <Table Name="smk.defects_book" Type="Table" Left="570" Top="-20" Width="173.156677246094" Height="282" Collapsed="False" IsMaster="True" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="projectid" InSelect="True" SortType="0" />
+              <Field Name="describe" InSelect="True" SortType="0" />
+              <Field Name="mnemoid" InSelect="True" SortType="0" />
+              <Field Name="nodeid" InSelect="True" SortType="0" />
+              <Field Name="priority" InSelect="True" SortType="0" />
+              <Field Name="defectvedomostid" InSelect="True" SortType="0" />
+              <Field Name="autorid" InSelect="True" SortType="0" />
+              <Field Name="curstate" InSelect="True" SortType="0" />
+              <Field Name="createdate" InSelect="True" SortType="0" />
+              <Field Name="tocategoryid" InSelect="True" SortType="0" />
+              <Field Name="touserid" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.defects_book_state_defect" Type="Table" Left="219.352905273438" Top="240" Width="173.156677246094" Height="210" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="defectid" InSelect="True" SortType="0" />
+              <Field Name="state" InSelect="True" SortType="0" />
+              <Field Name="comment" InSelect="True" SortType="0" />
+              <Field Name="date" InSelect="True" SortType="0" />
+              <Field Name="signatureuserid" InSelect="True" SortType="0" />
+              <Field Name="tocategoryid" InSelect="True" SortType="0" />
+              <Field Name="touserid" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.serv_users" Type="Table" Left="1100" Top="370" Width="202.556411743164" Height="228" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="fname" InSelect="True" SortType="0" />
+              <Field Name="sname" InSelect="True" SortType="0" />
+              <Field Name="tname" InSelect="True" SortType="0" />
+              <Field Name="pass" InSelect="True" SortType="0" />
+              <Field Name="departamentid" InSelect="True" SortType="0" />
+              <Field Name="dolgnostid" InSelect="True" SortType="0" />
+              <Field Name="otdelid" InSelect="True" SortType="0" />
+              <Field Name="sectorid" InSelect="True" SortType="0" />
+              <Field Name="category" InSelect="True" SortType="0" />
+              <Field Name="email" InSelect="True" SortType="0" />
+              <Field Name="tel_in" InSelect="True" SortType="0" />
+              <Field Name="tel_mob" InSelect="True" SortType="0" />
+              <Field Name="active" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.serv_users_category" Type="Table" Left="780" Top="480" Width="264.344146728516" Height="102" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="name" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.smk_projects" Type="Table" Left="1500" Top="20" Width="237.426208496094" Height="228" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="Name" InSelect="True" SortType="0" />
+              <Field Name="Npgvr" InSelect="True" SortType="0" />
+              <Field Name="dogovor" InSelect="True" SortType="0" />
+              <Field Name="Works" InSelect="True" SortType="0" />
+              <Field Name="customer" InSelect="True" SortType="0" />
+              <Field Name="object" InSelect="True" SortType="0" />
+              <Field Name="path" InSelect="True" SortType="0" />
+              <Field Name="managerid" InSelect="True" SortType="0" />
+              <Field Name="kuratorid" InSelect="True" SortType="0" />
+              <Field Name="date_make" InSelect="True" SortType="0" />
+              <Field Name="current_step" InSelect="True" SortType="0" />
+              <Field Name="percentage_complet" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.pr_mnemoschema_name" Type="Table" Left="1100" Top="100" Width="294.923583984375" Height="120" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="name" InSelect="True" SortType="0" />
+              <Field Name="attr" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.pr_nodes_name" Type="Table" Left="1100" Top="230" Width="231.870193481445" Height="120" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="name" InSelect="True" SortType="0" />
+              <Field Name="attr" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+        </Tables>
+        <Links>
+          <Link OutTable="smk.defects_book_state_defect" OutField="defectid" InTable="smk.defects_book" InField="id" />
+          <Link OutTable="smk.defects_book_state_defect" OutField="tocategoryid" InTable="smk.serv_users_category" InField="id" />
+          <Link OutTable="smk.defects_book_state_defect" OutField="signatureuserid" InTable="smk.serv_users" InField="id" />
+          <Link OutTable="smk.defects_book" OutField="projectid" InTable="smk.smk_projects" InField="id" />
+          <Link OutTable="smk.defects_book" OutField="mnemoid" InTable="smk.pr_mnemoschema_name" InField="id" />
+          <Link OutTable="smk.defects_book" OutField="nodeid" InTable="smk.pr_nodes_name" InField="id" />
+          <Link OutTable="smk.defects_book" OutField="autorid" InTable="smk.serv_users" InField="id" />
+          <Link OutTable="smk.defects_book_state_defect" OutField="touserid" InTable="smk.serv_users" InField="id" />
+          <Link OutTable="smk.defects_book" OutField="touserid" InTable="smk.serv_users_category" InField="id" />
+          <Link OutTable="smk.defects_book" OutField="touserid" InTable="smk.serv_users" InField="id" />
+        </Links>
+      </Data>
+    </View>
+    <View Name="Data" Visible="True" />
+  </Views>
+  <Settings>
+    <Options xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="PageOptions">
+      <TopLeftMargins>
+        <Width>39.3700787401575 in/100</Width>
+        <Height>39.3700787401575 in/100</Height>
+      </TopLeftMargins>
+      <BottomRightMargins>
+        <Width>39.3700787401575 in/100</Width>
+        <Height>39.3700787401575 in/100</Height>
+      </BottomRightMargins>
+      <PaperSize>
+        <Width>827 in/100</Width>
+        <Height>1169 in/100</Height>
+      </PaperSize>
+    </Options>
+    <Options xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="PrintOptions" />
+  </Settings>
+</Document>

@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Devart (www.devart.com), Master-detail document file -->
+<!-- Modifying this generated file will probably render it invalid -->
+<Document>
+  <Properties>
+    <Type>Master-detail Document</Type>
+    <DatabaseProvider>59f90733-4d68-4fdf-82a7-f0fcbf5460aa</DatabaseProvider>
+    <ProviderVersion>6.0.189.1</ProviderVersion>
+    <SchemaVersion>1.0</SchemaVersion>
+  </Properties>
+  <Connection Name="smk.localhost">
+    <ConnectionString>User Id=smk;Host=localhost;Database=smk;Character Set=utf8;</ConnectionString>
+  </Connection>
+  <Views ShowAdditionalViews="True" IsLayoutActiveAttribute="False" MainViewAttribute="Design" MainViewScale="75">
+    <View Name="Design" Active="True" Visible="True">
+      <Data>
+        <Properties LocationX="-405.747124212928" LocationY="-94.2528730466291" Scale="0.87" />
+        <Tables>
+          <Table Name="smk.smk_project_step" Type="Table" Left="160" Top="-20" Width="223.962646484375" Height="264" Collapsed="False" IsMaster="True" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="projectid" InSelect="True" SortType="0" />
+              <Field Name="stepid" InSelect="True" SortType="0" />
+              <Field Name="datestart" InSelect="True" SortType="0" />
+              <Field Name="datestop" InSelect="True" SortType="0" />
+              <Field Name="ncorrect" InSelect="True" SortType="0" />
+              <Field Name="datestartfact" InSelect="True" SortType="0" />
+              <Field Name="datestopfact" InSelect="True" SortType="0" />
+              <Field Name="current_persent" InSelect="True" SortType="0" />
+              <Field Name="signaturemanager" InSelect="True" SortType="0" />
+              <Field Name="curatorid" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.smk_project_step_name" Type="Table" Left="620" Top="330" Width="292.058990478516" Height="102" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="name" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.smk_projects" Type="Table" Left="-130" Top="20" Width="173.156669616699" Height="228" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="Name" InSelect="True" SortType="0" />
+              <Field Name="Npgvr" InSelect="True" SortType="0" />
+              <Field Name="dogovor" InSelect="True" SortType="0" />
+              <Field Name="Works" InSelect="True" SortType="0" />
+              <Field Name="customer" InSelect="True" SortType="0" />
+              <Field Name="object" InSelect="True" SortType="0" />
+              <Field Name="path" InSelect="True" SortType="0" />
+              <Field Name="managerid" InSelect="True" SortType="0" />
+              <Field Name="kuratorid" InSelect="True" SortType="0" />
+              <Field Name="date_make" InSelect="True" SortType="0" />
+              <Field Name="current_step" InSelect="True" SortType="0" />
+              <Field Name="percentage_complet" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.serv_users" Type="Table" Left="190" Top="310" Width="202.556411743164" Height="318" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="fname" InSelect="True" SortType="0" />
+              <Field Name="sname" InSelect="True" SortType="0" />
+              <Field Name="tname" InSelect="True" SortType="0" />
+              <Field Name="pass" InSelect="True" SortType="0" />
+              <Field Name="departamentid" InSelect="True" SortType="0" />
+              <Field Name="dolgnostid" InSelect="True" SortType="0" />
+              <Field Name="otdelid" InSelect="True" SortType="0" />
+              <Field Name="sectorid" InSelect="True" SortType="0" />
+              <Field Name="category" InSelect="True" SortType="0" />
+              <Field Name="email" InSelect="True" SortType="0" />
+              <Field Name="tel_in" InSelect="True" SortType="0" />
+              <Field Name="tel_mob" InSelect="True" SortType="0" />
+              <Field Name="active" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+          <Table Name="smk.smk_project_stepcurator_jurnal" Type="Table" Left="590" Top="40" Width="345.034240722656" Height="174" Collapsed="False" IsMaster="False" FetchLimit="1000">
+            <Fields>
+              <Field Name="id" InSelect="True" SortType="0" />
+              <Field Name="projectstepid" InSelect="True" SortType="0" />
+              <Field Name="signaturestepcurator" InSelect="True" SortType="0" />
+              <Field Name="daterecord" InSelect="True" SortType="0" />
+              <Field Name="comment" InSelect="True" SortType="0" />
+              <Field Name="current_percent" InSelect="True" SortType="0" />
+            </Fields>
+          </Table>
+        </Tables>
+        <Links>
+          <Link OutTable="smk.smk_project_step" OutField="projectid" InTable="smk.smk_projects" InField="id" />
+          <Link OutTable="smk.smk_project_step" OutField="stepid" InTable="smk.smk_project_step_name" InField="id" />
+          <Link OutTable="smk.smk_project_step" OutField="signaturemanager" InTable="smk.serv_users" InField="id" />
+          <Link OutTable="smk.smk_projects" OutField="managerid" InTable="smk.serv_users" InField="id" />
+          <Link OutTable="smk.smk_projects" OutField="kuratorid" InTable="smk.serv_users" InField="id" />
+          <Link OutTable="smk.smk_project_stepcurator_jurnal" OutField="projectstepid" InTable="smk.smk_project_step" InField="id" />
+          <Link OutTable="smk.smk_project_stepcurator_jurnal" OutField="signaturestepcurator" InTable="smk.serv_users" InField="id" />
+          <Link OutTable="smk.smk_project_step" OutField="curatorid" InTable="smk.serv_users" InField="id" />
+        </Links>
+      </Data>
+    </View>
+    <View Name="Data" Visible="True" />
+  </Views>
+  <Settings>
+    <Options xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="PageOptions">
+      <TopLeftMargins>
+        <Width>39.3700787401575 in/100</Width>
+        <Height>39.3700787401575 in/100</Height>
+      </TopLeftMargins>
+      <BottomRightMargins>
+        <Width>39.3700787401575 in/100</Width>
+        <Height>39.3700787401575 in/100</Height>
+      </BottomRightMargins>
+      <PaperSize>
+        <Width>827 in/100</Width>
+        <Height>1169 in/100</Height>
+      </PaperSize>
+    </Options>
+    <Options xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:type="PrintOptions" />
+  </Settings>
+</Document>

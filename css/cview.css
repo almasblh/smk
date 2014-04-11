@@ -1,0 +1,227 @@
+.grid-view-loading
+{
+	background:url(loading.gif) no-repeat;
+}
+
+.grid-view
+{
+	padding: 0;
+        overflow: auto;
+        width: calc;
+}
+
+.grid-view table.items
+{
+/*	width: 100%;
+        border-width: 1px;
+        border-style: solid;*/
+        font-style: italic;
+
+}
+
+.grid-view table.items th, .grid-view table.items td
+{
+	font-size: 0.9em;
+	border: 1px solid;
+        border-color: white;
+        padding: 0 2 0 2;
+        overflow: hidden;
+        text-align: left;
+        text-overflow: hidden;
+        /*border-color: #a4a2bd;*/
+}
+
+.grid-view table.items th
+{
+	color: 0;
+	/*border: 1px white solid;*/
+        text-align: center;
+        background: -moz-linear-gradient(to top, #63869a, #a4ddff);
+        background: -webkit-linear-gradient(to top, #63869a, #a4ddff);
+        background: -o-linear-gradient(to top, #63869a, #a4ddff);
+        background: -ms-linear-gradient(top, #63869a, #a4ddff);
+        background: linear-gradient(to top, #63869a, #a4ddff);
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#63869a', endColorstr='#a4ddff');
+}
+
+.grid-view table.items th a
+{
+	color: 0;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.grid-view table.items th a:hover
+{
+	color: #FFF;
+}
+
+.grid-view table.items th a.asc
+{
+	background:url(up.gif) right center no-repeat;
+	padding-right: 10px;
+}
+
+.grid-view table.items th a.desc
+{
+	background:url(down.gif) right center no-repeat;
+	padding-right: 10px;
+}
+
+.grid-view table.items tr.selected{
+    background: yellow/*#BCE774*/;
+}
+.grid-view table.items tr.redBackground{
+    color: white;
+    background-color: #ff5a5a;
+}
+.grid-view table.items tr.rozeBackground{
+    color: red;
+    background-color: #ffcbcb;
+}
+.grid-view table.items tr.yellowBackground{
+    color: 0;
+    background-color: yellow;
+}
+.grid-view table.items tr.greenBackground{
+    color: green;
+    background-color: #a7fda7;
+}
+
+.grid-view table.items td{
+    vertical-align: top;
+    padding: 1;
+}
+
+.grid-view table.items td.redBackground{
+    color: red;
+    background-color: #ffdede;
+}
+.grid-view table.items td.yelloBackground {
+    background-color: #e7ff65;
+    color: #000;
+} 
+.grid-view table.items td.greenBackground {
+    background-color: #d3ffd3;
+    color: green;
+}
+.grid-view table.items td.rozeBackground {
+    background-color: #FFAAAA;
+    color: #000;
+}
+.grid-view table.items td.blueBackground {
+    background: blue;
+    color: white;
+}
+.grid-view table.items tr:hover.selected
+{
+	background: #CCFF66;
+}
+
+.grid-view table.items tbody tr:hover
+{
+	background: #ECFBD4;
+}
+
+.grid-view .link-column img
+{
+	border: 0;
+}
+
+.grid-view .button-column
+{
+	text-align: center;
+	width: 60px;
+}
+
+.grid-view .button-column img
+{
+	border: 0;
+}
+
+.grid-view .checkbox-column
+{
+	width: 15px;
+}
+
+.grid-view .summary
+{
+	margin: 0;
+	text-align: right;
+        background-color:#b0e2ff;
+}
+
+.grid-view .pager
+{
+	margin: 5px 0 0 0;
+	text-align: right;
+}
+
+.grid-view .empty
+{
+	font-style: italic;
+}
+
+.grid-view .filters input,
+.grid-view .filters select
+{
+	width: 100%;
+        margin: 0;
+        padding: 0;
+}
+.layer100 {
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100px;
+    text-overflow: ellipsis;
+}
+.layer100:hover {
+    white-space: normal;
+    overflow: visible;
+    background-color: white;
+    color: #0;
+}
+.layer200 {
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 200px;
+    text-overflow: ellipsis;
+}
+.layer200:hover {
+    white-space: normal;
+    overflow: visible;
+    background-color: white;
+    color: #0;
+}
+.layer300 {
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 300px;
+    text-overflow: ellipsis;
+}
+.layer300:hover {
+    white-space: normal;
+    overflow: visible;
+    background-color: white;
+    color: #0;
+}
+.layer400 {
+    padding: 0;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 400px;
+    text-overflow: ellipsis;
+}
+.layer400:hover {
+    white-space: normal;
+    overflow: visible;
+    background-color: white;
+    color: #0;
+}
