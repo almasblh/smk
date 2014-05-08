@@ -10,7 +10,6 @@ return array(
         'application.extensions.*',
         'application.extensions.PHPExcel.Classes.PHPExcel',                     //импорт библиотеки PHPExcel
         'application.extensions.gantti.gantti',                                 //импорт библиотеки gantti
-        //'application.extensions.SimpleHTMLDOM.SimpleHTMLDOM'
     ),
     'modules'=>array(
         'gii'=>array(
@@ -20,6 +19,21 @@ return array(
         ),
     ),
     'components'=>array(
+        'rc'=>array(
+            'class'=>'ext.RC',
+            'sMerchantLogin'=>'',
+            'sMerchantPass1'=>'',
+            'sMerchantPass2'=>'',
+            'sCulture' => 'ru',
+            'resultMethod' => 'post',
+            'sIncCurrLabel' => 'QiwiR',
+            'orderModel' => 'Order',
+            'priceField'=>'price',
+            'isTest' => false,
+            'onSuccess'=>array('Order','Success'),
+            'onFail'=>array('Order','Fail'),
+        ),
+
         'cache' => array(
 //           'class' => 'system.caching.CApcCache',
             'class' => 'system.caching.CFileCache',
@@ -54,14 +68,10 @@ return array(
             ),
          ),
         'user'=>array(
+            //'class' => 'WebUser',
             'allowAutoLogin'=>true,                                             // enable cookie-based authentication
+            //'loginUrl'=>array('site/login')
         ),
-        //'viewRenderer'=>array(
-        //    'class'=>'application.extensions.Smarty.CSmartyViewRenderer',
-        //    'fileExtension' => '.tpl',
-            //'pluginsDir' => 'application.smartyPlugins',
-            //'configDir' => 'application.smartyConfig',
-        //),
         // uncomment the following to enable URLs in path-format
         /*
         'urlManager'=>array(

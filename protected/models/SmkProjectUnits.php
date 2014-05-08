@@ -64,13 +64,12 @@ class SmkProjectUnits extends CActiveRecord
 		);
 	}
 
-	public function search()
+	public function search($projectid=0)
 	{
+            if(!$projectid) $projectid=Yii::app()->user->GetState('activeproject');
             $criteria=new CDbCriteria;
 
-            //$criteria->compare('id',$this->id,true);
-            $criteria->compare('projectid',Yii::app()->user->GetState('activeproject'));
-            //$criteria->compare('systemid',$this->systemid);
+            $criteria->compare('projectid',$projectid);
             $criteria->compare('unitid',$this->unitid);
 
             return new CActiveDataProvider($this, array(

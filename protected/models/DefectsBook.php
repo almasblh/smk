@@ -1,12 +1,9 @@
 <?php
-class DefectsBook extends CActiveRecord{
-    
-    public $status = array('Открыт','Переоткрыт','Отклонен','Выполнен','Проверен','Закрыт');
-    public $prior = array('Высок','Средн','Низк');
-    public $active;
-
-    
-    public static function model($className=__CLASS__){
+class DefectsBook extends CAssaRecord
+{
+   
+    public static function model($className=__CLASS__)
+    {
         return parent::model($className);
     }
 
@@ -16,68 +13,92 @@ class DefectsBook extends CActiveRecord{
 
     public function rules(){
         return array(
-//            array('projectid, priority', 'required'),
-//            array('priority, autorid', 'numerical', 'integerOnly'=>true),
-//            array('projectid', 'length', 'max'=>8),
-//            array('mnemoid', 'length', 'max'=>3),
-
-            array('id, projectid, describe, mnemoid, nodeid, priority, autorid, defectvedomostid, tocategoryid, touserid, curstate, createdate', 'safe', 'on'=>'search'),
+            array('describe', 'required'),
+            array('touserid', 'numerical', 'integerOnly'=>true),
+            array('projectid, mnemoid, unitid, priority, defectvedomostid', 'length', 'max'=>11),
+            array('describe', 'length', 'max'=>255),
+            array('autorid, laststate', 'length', 'max'=>10),
+            array('createdate', 'safe'),
+            // The following rule is used by search().
+            // Please remove those attributes that should not be searched.
+            array('id, projectid, describe, mnemoid, unitid, priority, defectvedomostid, autorid, laststate, createdate, touserid', 'safe', 'on'=>'search'),
         );
     }
 
     public function relations(){
         return array(
-            'SmkProjects' => array(self::BELONGS_TO, 'SmkProjects', 'projectid'),
-            'PrMnemoschemaName' => array(self::BELONGS_TO, 'PrMnemoschemaName', 'mnemoid'),
-            'PrNodesName' => array(self::BELONGS_TO, 'PrNodesName', 'nodeid'),
-            'ServUsers'=>array(self::BELONGS_TO,'ServUsers','autorid'),
-            'DefectsBookStateDefect'=> array(self::HAS_MANY,'DefectsBookStateDefect','id'),
-            'ToUser'=>array(self::BELONGS_TO,'ServUsers','touserid'),
-            'ToCategory'=>array(self::BELONGS_TO,'ServUsersCategory','tocategoryid'),        
+            'unit' => array(self::BELONGS_TO, 'ReestrUnitName', 'unitid'),
+            'mnemo' => array(self::BELONGS_TO, 'ReestrMnemoName', 'mnemoid'),
+            'defectsBookStateDefects' => array(self::HAS_MANY, 'DefectsBookStateDefect', 'defectid'),
+            'project' => array(self::BELONGS_TO, 'SmkProjects', 'projectid'),
         );
     }
 
     public function attributeLabels(){
         return array(
             'id' => 'ID',
-            'projectid' => 'Проект',
-            'describe' => 'Описание',
-            'mnemoid' => 'Мнемо-схема',
-            'nodeid' => 'Устрой-ство',
-            'priority' => 'Прио-ритет',
+            'projectid' => 'Projectid',
+            'describe' => 'Описание дефекта',
+            'mnemoid' => 'Мнемосхема',
+            'unitid' => 'Шкаф',
+            'priority' => 'Важность',
+            'defectvedomostid' => 'Рекл.№',
             'autorid' => 'Автор',
-            'defectvedomostid' => 'Дефектная ведомость',
-            'curstate'=>'Статус',
-            'createdate'=>'Дата создания',
-            'tocategoryid'=>'кому (категория)',
-            'touserid'=>'кому (конкретно)',
+            'laststate' => 'Текущий статус',
+            'createdate' => 'Дата создания',
+            'touserid' => 'Кому направлено',
+            'users_email_copy1'=>'Копия1',
+            'users_email_copy2'=>'Копия2',
+            'users_email_copy3'=>'Копия3',
+            'users_email_copy4'=>'Копия4',
+            'users_email_copy5'=>'Копия5'
         );
     }
 
-    public function search(){
+    public function search($projectid){
         $criteria=new CDbCriteria;
 
-//        $criteria->compare('id',$this->id,true);
-        $criteria->compare('projectid',Yii::app()->user->getState('activeproject'),true);
+        $criteria->compare('id',$this->id,true);
+        $criteria->compare('projectid',$projectid);
         $criteria->compare('describe',$this->describe,true);
-        $criteria->compare('mnemoid',$this->mnemoid,true);
-        $criteria->compare('nodeid',$this->nodeid,true);
-        $criteria->compare('priority',$this->priority);
-        $criteria->compare('autorid',$this->autorid);
-        $criteria->compare('curstate',$this->curstate);
-        $criteria->compare('createdate',$this->createdate);
+        $criteria->compare('mnemoid',$this->mnemoid,false);
+        $criteria->compare('unitid',$this->unitid,true);
+        $criteria->compare('priority',$this->priority,true);
         $criteria->compare('defectvedomostid',$this->defectvedomostid,true);
-        $criteria->compare('tocategoryid',$this->tocategoryid,true);
-        $criteria->compare('touserid',$this->touserid,true);        
-        $criteria->with=array('DefectsBookStateDefect','PrMnemoschemaName','PrNodesName','ServUsers');
-        $criteria->order='priority';
+        $criteria->compare('autorid',$this->autorid);
+        $criteria->compare('laststate',$this->laststate,true);
+        $criteria->compare('createdate',$this->createdate,true);
+        $criteria->compare('touserid',$this->touserid);
+        $criteria->order = 'laststate DESC';
 
         return new CActiveDataProvider($this, array(
-                        'criteria'=>$criteria,
-                        'pagination' => array(
-                            'pageSize' => Yii::app()->params['postsPerPage'],
-                        ),
-                    )
-                );
+                'criteria'=>$criteria,
+                'pagination'=>array('pageSize' => 32),
+        ));
+    }
+    
+    public function getRowHtmlOptions($row, $data, $grid){
+        switch($data->laststate){
+            case 0:
+                $R=0;$G=255;$B=0;
+                break;
+            case 1:
+                $R=255;$G=200;$B=200;
+                break;
+            case 2:
+                $R=255;$G=255;$B=128;
+                break;
+            case 3:
+                $R=0;$G=255;$B=255;
+                break;
+            case 4:
+                $R=255;$G=0;$B=0;
+                break;
+        }
+        $R=str_pad(dechex($R), 2, "0", STR_PAD_LEFT);
+        $G=str_pad(dechex($G), 2, "0", STR_PAD_LEFT);
+        $B=str_pad(dechex($B), 2, "0", STR_PAD_LEFT);
+        $value=array('style'=>'background-color:'."#$R$G$B");
+        return $value;
     }
 }

@@ -5,25 +5,53 @@ class SiteController extends CAssaController
 	public $layout='//layouts/column2';
 	public function actions(){
             return array(
-                // captcha action renders the CAPTCHA image displayed on the contact page
                 'captcha'=>array(
                         'class'=>'CCaptchaAction',
                         'backColor'=>0xFFFFFF,
                 ),
-                // page action renders "static" pages stored under 'protected/views/site/pages'
-                // They can be accessed via: index.php?r=site/page&view=FileName
                 'page'=>array(
                         'class'=>'CViewAction',
                 ),
             );
 	}
         
-    public function accessRules(){// правила доступа к ресурсам контроллера
+/*    public function accessRules(){// правила доступа к ресурсам контроллера
         return array(
             array('allow',  // список разрешений
                 'users'=>array('*','$'),
             ),
         );
+    }
+ 
+	public function filters(){
+            return array(
+                'accessControl', // perform access control for CRUD operations
+            );
+	}        
+        
+    public function accessRules(){// правила доступа к ресурсам контроллера
+        $f=array();
+        if(!Yii::app()->user->getState('sup')){
+            $f=$this->ActionsForUser(__CLASS__);
+        }
+        return array(
+            array('allow',  // список разрешений
+                'actions'=>$f,
+                'users'=>array(Yii::app()->user->id),
+            ),
+            array('deny',  // список запрещений
+                'users'=>array('*','$'),
+            ),
+        );
+    }
+* 
+ */    
+    public function actionRobokassa(){// правила доступа к ресурсам контроллера
+        $amount = 100; //$
+        $orderId = 124;
+        $description = 'велосипед с зеркалом';
+        $clierntEmail = 'rewtrd@gmail.com';
+        Yii::app()->rc->pay($amount, $orderId,$description,$clierntEmail);
     }
 
 	public function actionError(){
@@ -510,14 +538,9 @@ class SiteController extends CAssaController
         }
         
     public function actionLogout(){
-            Yii::app()->user->logout();
-            $this->redirect(Yii::app()->homeUrl);
+        Yii::app()->cache->flush();
+        Yii::app()->user->logout();
+        $this->redirect(Yii::app()->homeUrl);
     }
-        
-/*    public function getFIO($data, $row, $grid){
-        return $data["fio"][0].' '.$data["fio"][1].' '.$data["fio"][2];
-    }
- * 
- */
 }
 

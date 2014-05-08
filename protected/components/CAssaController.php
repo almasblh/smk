@@ -1,6 +1,27 @@
 <?php
 class CAssaController extends Controller
 {
+/*    function init(){
+        // Если параметр не пуст и текущий режим не соответствует выставленному в настройках
+        if(
+            !empty(Yii::app()->user->useHttps) &&
+            Yii::app()->request->isSecureConnection!==Yii::app()->user->useHttps
+        ){
+            $schema = 'http://';
+            if(Yii::app()->user->useHttps){
+                $schema = 'https://';
+            }
+ 
+            // получим URL с нужной схемой
+            $url = $schema.Yii::app()->request->serverName.Yii::app()->request->url;
+ 
+            // перенаправим на него пользователя
+            Yii::app()->request->redirect($url, true);
+        }
+    }
+ * 
+ */
+    
     public function ActiveProjectSessionSave($id){
         $project=SmkProjects::model()->findByPk($id);
         Yii::app()->user->setState('activeproject',$project->id);
@@ -10,53 +31,9 @@ class CAssaController extends Controller
         Yii::app()->user->setState('activeprojectstepname','не выбран');
         $this->MakeControllersAndActionsListForCurrentUser(Yii::app()->user->id);
     }
-    
-/*    public function GetFIO2()
-    {
-        $users=Yii::app()->cache->get('UsersFIO2');
-        if($users===false){
-            foreach(Yii::app()->db->createCommand('SELECT id,fname,sname,tname FROM serv_users;')->queryAll() as $row=>$val){
-                $users[$val['id']]=$val['fname'].' '.mb_substr($val['sname'],0,1,"UTF-8").'.'.mb_substr($val['tname'],0,1,"UTF-8").'.';
-            }
-            Yii::app()->cache->set('UsersFIO2',$users);
-        }
-        return $users;
-    }
-    
-    
-    public function GetUsersList()
-    {
-        $list=Yii::app()->cache->get('UsersList');
-        if($list===false)                        
-            {   $list=CHtml::listData(ServUsers::model()->findAll(array('condition'=>'active=1','order'=>'fname')), 'id', 'FIO');
-                Yii::app()->cache->set('UsersList',$list);
-            }
-        return $list;
-    }
-
-    public function GetReestrReklamationStatusName()
-    {
-        $list=Yii::app()->cache->get('ReestrReklamationStatusName');
-        if($list===false)                        
-            {   $list=CHtml::listData(ReestrReklamationStatusName::model()->findAll(array('order'=>'name')), 'id', 'name');
-                Yii::app()->cache->set('ReestrReklamationStatusName',$list);
-            }
-        return $list;
-    }
-
-    public function GetPGVRList()
-    {
-        $list=Yii::app()->cache->get('PGVRList');
-        if($list===false)
-            {   $list=CHtml::listData(SmkProjects::model()->findAll(array('select'=>'id,CONCAT(Npgvr," - ",IF(LENGTH(Name)<80, Name, CONCAT(LEFT(Name,80),"..."))) as list','order'=>'Npgvr' )), 'id', 'list');
-                Yii::app()->cache->set('PGVRList',$list,3600);
-            }
-        return $list;
-    }
- * 
- */    
+ 
     protected function beforeAction($action) {
-        if (Yii::app()->user->isGuest && $this->id.'/'.$action->id !== 'site/login') {
+        if (Yii::app()->user->isGuest && ($this->id.'/'.$action->id !== 'site/login')) {
           Yii::app()->user->loginRequired();
         }
         return true;
@@ -74,8 +51,10 @@ class CAssaController extends Controller
                                 $Title,                                         //Наименование кнопки
                                 $par='',                                        //Параметры
                                 $SubjectType='',                                //тип окна заполнения данными "ajax","PopUpWin","NewWin"
-                                $div=''                                         //тег окна заполнения
+                                $div='',                                        //тег окна заполнения
+                                $bkcolor=''                                     //цвет оформления кнопки (если '' - то по умолчанию)
             ){
+        $backcolor=($bkcolor<>'')?('border: 4px solid '.$bkcolor.';'):'';
         $param = $par=='' ? '' : '&'.$par;
         if($this->EnableForCurrentUser($controller,$action)){                   // проверка на допуск пользователя к данной кнопке
             switch($SubjectType){
@@ -85,7 +64,8 @@ class CAssaController extends Controller
                             array($controller.'/'.$action.$param),
                             array('type' => 'POST',
                                   'update' =>$div,
-                            )
+                            ),
+                            array('style'=>$backcolor)
                     );
                 break;
                 case 'PopUpWin':
@@ -99,22 +79,25 @@ class CAssaController extends Controller
                                     \'scrollbars,menubar,location,width=400,height=300,top=0\'
                                 ); win.focus(); return false'
     //                                \'menubar=no,resizable=no,scrollbars=no,status=no,location,width=400,height=300,top=0\'
-                            )
+                            ),
+                    array('style'=>$backcolor)
                     );
                 break;
                 case 'NewWin':                                                  //создание нового окна
                     echo CHtml::link(
                             CHtml::button($Title),
-                            array($controller.'/'.$action.$param)
-                            ,array(
+                            array($controller.'/'.$action.$param),
+                            array(
                                'target'=>"_blank"
-                            )
+                            ),
+                            array('style'=>$backcolor)
                     );
                 break;
                 default:                                                        //иначе вывод простой кнопки
                     echo CHtml::link(
                             CHtml::button($Title),
-                            array($controller.'/'.$action.$param)
+                            array($controller.'/'.$action.$param),
+                            array('style'=>$backcolor)
                     );
                 break;
             }
@@ -247,6 +230,61 @@ class CAssaController extends Controller
         $date=getdate(strtotime($date));
         $now=getdate();
         return ($date[0]-$now[0]);
+    }
+    //Функция почтовой раасылки
+    public function Send_Email(
+            $userid,                                                            //кому
+            $userid_copy=0,                                                     //кому копии
+            $subject,                                                           //тема письма
+            $select,                                                            //шаблон письма
+            $value,                                                             //данные модели для формированиятелв письма
+            $path,                                                              //путь - определяет путь к шаблону
+            $datetostop=0,                                                      //срок окончания. если <0 то просрочено
+            $from_userid=0                                                      //id от кого писмо послано                                                        
+    ){
+        if($userid[0]==0) return 0;//если нет списка адресатов - выход
+
+        Yii::app()->mailer->SetPathViews(Yii::app()->mailer->pathViewsDefault.'.'.$path);
+        Yii::app()->mailer->SetPathLayouts(Yii::app()->mailer->GetPathViews().'.layouts');
+        unset($adresat);
+        foreach($userid as $us=>$row){                                          //составить список адресатов по количеству менеджеров по рекламациям
+            $adresat[]=$value->GetUsersFIO($row);
+            Yii::app()->mailer->AddAddress($value->GetUsersEmail($row));
+        }
+        Yii::app()->mailer->Host = 'smtp-nn.sintek-nn.ru';
+        Yii::app()->mailer->IsSMTP();
+        Yii::app()->mailer->From = 'smk@sintek-nn.ru';
+        Yii::app()->mailer->FromName = 'smk';
+        Yii::app()->mailer->CharSet = 'Windows-1251';//'UTF8';//
+        Yii::app()->mailer->Subject = mb_convert_encoding($subject,"CP1251","UTF-8");
+        if($from_userid)
+            Yii::app()->mailer->ConfirmReadingTo = $value->GetUsersEmail($from_userid);
+        Yii::app()->mailer->IsHTML(true);
+
+        if($userid_copy[0]!=0){                                                 //рассылка копий
+            foreach($userid_copy as $s=>$row){                                  //составить список адресатов по количеству менеджеров по рекламациям
+                Yii::app()->mailer->AddCC($value->GetUsersEmail($row));
+            }
+        }
+        
+        Yii::app()->mailer->Body = mb_convert_encoding(
+                $this->renderFile(
+                    Yii::getPathOfAlias(Yii::app()->mailer->GetPathLayouts().'.template').'.php',
+                    array('content'=>
+                        $this->renderFile(
+                            Yii::getPathOfAlias(Yii::app()->mailer->GetPathViews().'.'.$select).'.php',
+                            array('value'=>$value,
+                               // 'project'=>SmkProjects::model()->findByPk($value->projectid)
+                            ),
+                            true
+                        )       
+                    ),
+                    true
+                ),
+                "CP1251",
+                "UTF-8"
+            );
+        Yii::app()->mailer->Send();
     }
 }
 ?>

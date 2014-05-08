@@ -79,6 +79,7 @@
             echo $form->dropDownList(
                     $model,
                     'curatorid',
+                   // $model->GetUsersList()
                     CHtml::listData(
                         ServUsers::model()->findAll(),
                         'id',

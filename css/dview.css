@@ -43,3 +43,7 @@ table.detail-view tr.redBackground{
 table.detail-view tr.blackBackground {
     background: #000;
 } 
+.yellowBackground{
+    color: 0;
+    background-color: yellow;
+}

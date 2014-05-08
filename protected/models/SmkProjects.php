@@ -64,7 +64,7 @@ class SmkProjects extends CAssaRecord
             'object' => 'Объект',
             'path' =>'Путь к файлам проекта',
             'date_make' =>'Дата посл. коррекции',
-            'percentage_complet'=>'Выполнено',
+            'percentage_complet'=>'Вып.%',
             'signaturecreator'=>'Создатель',
             'datecreaterecord'=>'Дата создания',
             'lastcorrection'=>'№ посл. коррекции',
@@ -96,11 +96,22 @@ class SmkProjects extends CAssaRecord
         );
     }
         public function getName($data, $row, $grid){
-            $str='<p class="layer100">';
+            $str='<p class="layer200">';
             $str.=$data->Name;
             $str.='</p>';
             return $str;
         }
+        
+        public function getNpgvrValue($data, $row, $grid){
+            return  CHtml::ajaxLink($data->Npgvr,
+                            CHtml::normalizeURL(array(
+                                ('SmkProjects/view&id='.$data->id))),
+                            array('type' => 'POST',
+                                'update' =>'.SmkProjectsSection'
+                            )
+                        );
+        }
+        
         public function getDogovor($data, $row, $grid){
             $str='<p class="layer100">';
             $str.=$data->dogovor;
@@ -140,17 +151,20 @@ class SmkProjects extends CAssaRecord
             $B=$min;
             $kg=($max-$min)/100;
             $G=$kg*$data->percentage_complet+$min;
-            if($G<0){
-                $G=-$G;
-                $R=$G;
+            if($G<$min){
+                $G=$min;
+                //$R=$G;
             }
             if($G>$max) $G=$max;
-            if($data->approved==0){
+            $R=$max+$min-$G;
+/*            if($data->approved==0){
                 $R=$max;
                 $G=150;
                 $B=150;
                 $stylestr='border-color: #FF0000;';
             }
+ * 
+ */
             $R=str_pad(dechex($R), 2, "0", STR_PAD_LEFT);
             $G=str_pad(dechex($G), 2, "0", STR_PAD_LEFT);
             $B=str_pad(dechex($B), 2, "0", STR_PAD_LEFT);
@@ -274,41 +288,69 @@ class SmkProjects extends CAssaRecord
         $criteria->compare('Works',$this->Works,true);
         $criteria->compare('customer',$this->customer,true);
         $criteria->compare('object',$this->object,true);
-        $criteria->compare('percentage_complet',$this->object);
+        $criteria->compare('percentage_complet',$this->percentage_complet);
         
         return new CActiveDataProvider($this, array(
             'criteria'=>$criteria,
             'pagination'=>array('pageSize' => 32),//Yii::app()->params['postsPerPage']),
-            'sort'=>array('attributes'=>array(
-                'Name'=>array(
-                    'asc' => $expr='Name',
-                    'desc' => $expr.' DESC',
-                ),
-                'Npgvr'=>array(
-                    'asc' => $expr='Npgvr',
-                    'desc' => $expr.' DESC',
-                ),
-                'dogovor'=>array(
-                    'asc' => $expr='dogovor',
-                    'desc' => $expr.' DESC',
-                ),
-                'Works'=>array(
-                    'asc' => $expr='Works',
-                    'desc' => $expr.' DESC',
-                ),
-                'customer'=>array(
-                    'asc' => $expr='customer',
-                    'desc' => $expr.' DESC',
-                ),
-                'object'=>array(
-                    'asc' => $expr='object',
-                    'desc' => $expr.' DESC',
-                ),
-                'percentage_complet'=>array(
-                    'asc' => $expr='object',
-                    'desc' => $expr.' DESC',
-                ),
-            ))
+            'sort'=>array(
+                'attributes'=>array(
+                    'Name'=>array(
+                        'asc' => $expr='Name',
+                        'desc' => $expr.' DESC',
+                    ),
+                    'Npgvr'=>array(
+                        'asc' => $expr='Npgvr',
+                        'desc' => $expr.' DESC',
+                    ),
+                    'dogovor'=>array(
+                        'asc' => $expr='dogovor',
+                        'desc' => $expr.' DESC',
+                    ),
+                    'Works'=>array(
+                        'asc' => $expr='Works',
+                        'desc' => $expr.' DESC',
+                    ),
+                    'customer'=>array(
+                        'asc' => $expr='customer',
+                        'desc' => $expr.' DESC',
+                    ),
+                    'object'=>array(
+                        'asc' => $expr='object',
+                        'desc' => $expr.' DESC',
+                    ),
+                    'percentage_complet'=>array(
+                        'asc' => $expr='object',
+                        'desc' => $expr.' DESC',
+                    ),
+                )
+            )
         ));
+    }
+    public function srch($par=0){
+        $criteria=new CDbCriteria;
+        if($par){
+            switch ($par){
+                case 'open':
+                    $criteria->condition = 'percentage_complet<100';
+                    break;
+                case 'close':
+                    $criteria->condition = 'percentage_complet >=100';
+                    break;
+                case 'nogaranty':
+                    //$criteria->condition = 'percentage_complet = :userId AND date_create < NOW()';
+                    break;
+            }
+        }
+        $criteria->compare('Name',$this->Name,true);
+        $criteria->compare('Npgvr',$this->Npgvr,true);
+        $criteria->compare('percentage_complet',$this->percentage_complet);
+        //$criteria->order = 'Npgvr, percentage_complet';
+        return new CActiveDataProvider($this,
+            array(
+                'criteria'=>$criteria,
+                'pagination'=>array('pageSize' => 320),
+            )
+        );
     }
 }

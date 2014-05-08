@@ -26,6 +26,18 @@ class CAssaRecord extends CActiveRecord
         else        return $users;
     }
     
+    public function GetUsersEmail($id=-1){                                      //Кешированный список email всех пользователей системы
+        $users=Yii::app()->cache->get('UsersEmail');
+        if($users===false){
+            foreach(Yii::app()->db->createCommand('SELECT id,email FROM serv_users;')->queryAll() as $row=>$val){
+                $users[$val['id']]=$val['email'];
+            }
+            Yii::app()->cache->set('UsersEmail',$users);
+        }
+        if($id<>-1) return $users[$id];
+        else        return $users;
+    }
+    
     public function GetUsersList(){                                             //Кешированный список всех пользователей системы
         $list=Yii::app()->cache->get('UsersList');
         if($list===false)                        
@@ -90,6 +102,42 @@ class CAssaRecord extends CActiveRecord
         if($list===false)                        
             {   $list=CHtml::listData(ReestrOfficeLocate::model()->findAll(array('order'=>'name')), 'id', 'name');
                 Yii::app()->cache->set('ReestrOfficeLocate',$list);
+            }
+        if($id<>-1) return $list[$id];
+        else        return $list;
+    }
+    public function GetUnitList($id=-1){                                        //Кешированный список всех шкафов
+        $list=Yii::app()->cache->get('UnitList');
+        if($list===false)
+            {   $list=CHtml::listData(ReestrUnitName::model()->findAll(array('order'=>'name')), 'id', 'caption');
+                Yii::app()->cache->set('UnitList',$list,3600);
+            }
+        if($id<>-1) return $list[$id];
+        else        return $list;
+    }
+    public function GetMnemoList($id=-1){                                       //Кешированный список всех мнемосхем
+        $list=Yii::app()->cache->get('MnemoList');
+        if($list===false)
+            {   $list=CHtml::listData(ReestrMnemoName::model()->findAll(array('order'=>'name')), 'id', 'caption');
+                Yii::app()->cache->set('MnemoList',$list,3600);
+            }
+        if($id<>-1) return $list[$id];
+        else        return $list;
+    }
+    public function GetPriorityList($id=-1){                                    //Кешированный список всех мнемосхем
+        $list=Yii::app()->cache->get('PriorityList');
+        if($list===false)
+            {   $list=array('1'=>'Высокая','2'=>'Средняя','3'=>'Низкая','4'=>'Пожелание');
+                Yii::app()->cache->set('PriorityList',$list,3600);
+            }
+        if($id<>-1) return $list[$id];
+        else        return $list;
+    }
+    public function GetDefectStatusList($id=-1){                                    //Кешированный список всех мнемосхем
+        $list=Yii::app()->cache->get('DefectStatusList');
+        if($list===false)
+            {   $list=array('0'=>'Закрыто','1'=>'Открыто','2'=>'Исправлено','3'=>'Отклонено','4'=>'Переоткрыто');
+                Yii::app()->cache->set('DefectStatusList',$list,3600);
             }
         if($id<>-1) return $list[$id];
         else        return $list;

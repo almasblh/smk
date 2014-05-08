@@ -1,6 +1,25 @@
+<style>
+    .SmkProjectDescribeName{
+        color: 0;
+        background-color: yellow;
+        font-size:1.2em;
+        font-style: oblique;
+    }
+</style>
 <?php
 Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl .'/css/gantti/gantti.css');
-
+Yii::app()->clientScript->registerScript('moreinfo', "
+$('.more_button').click(function(){
+    $('.More').toggle();
+    return false;
+});
+");
+Yii::app()->clientScript->registerScript('gantti', "
+$('.Gantti_button').click(function(){
+    $('.gantti').toggle();
+    return false;
+});
+");
 $this->breadcrumbs=array(
 	'Список проектов'=>array('index'),
 	$model->Name,
@@ -63,7 +82,7 @@ $this->breadcrumbs=array(
 ?>
 <div class="Menu">
 <?php
-    $this->MenuButton('SmkProjects','index','Проекты');
+    //$this->MenuButton('SmkProjects','index','Проекты');
     $this->MenuButton('SmkProjects','otchets','Вывести план в Excel','id='.Yii::app()->user->getState('activeproject').'&sw=pgvr&korrect=0');
     $this->MenuButton('SmkProjects','update','Редактировать план','id='.$model->id,'ajax','.InputForm');
     $rid=Yii::app()->db->createCommand('SELECT userid AS `0` FROM smk_project_email_list WHERE userid='.Yii::app()->user->id.' AND projectid='.$model->id.';')->queryRow();
@@ -71,6 +90,12 @@ $this->breadcrumbs=array(
         $this->MenuButton('SmkProjects','view','ВКЛЮЧИТЬ в рассылку','id='.$model->id.'&email=1');
     else
         $this->MenuButton('SmkProjects','view','УДАЛИТЬ из рассылки','id='.$model->id.'&email=0');
+    $this->MenuButton('DefectsBook','index','Журнал дефектов','id='.$model->id,'','',$btnDefectColor);
+    $this->MenuButton('Konstrucktor','index','Констр');
+    $this->MenuButton('SmkProjectUnits','index','Список шкафов');
+    $this->MenuButton('OimPmiTests','index','ОИиМ');
+
+
 ?>
 </div>
 <div class="ProjectInfo">  
@@ -78,7 +103,9 @@ $this->breadcrumbs=array(
     $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-            'Name',
+            array('name'=>'Name',
+                'cssClass'=>'SmkProjectDescribeName'
+            ),
             'Npgvr',
             'dogovor',
             'project',
@@ -112,6 +139,20 @@ $this->breadcrumbs=array(
                 'value'=> sprintf('%.2f',$model->percentage_complet),
                 'cssClass'=>($model->percentage_complet<0) ? 'redBackground' : '',
             ),
+        ),
+    ));
+    echo Chtml::button('еще инфо \/',
+            array('name'=>'more_button',
+                  //  'style'=>'float:right'
+                'class'=>'more_button'
+                )
+            );
+    ?>
+<div class="More" style="display:none">
+    <?php
+    $this->widget('zii.widgets.CDetailView', array(
+	'data'=>$model,
+	'attributes'=>array(
             array('name'=>'subdivision',
             ),            
             array('name'=>'datestart',
@@ -143,6 +184,7 @@ $this->breadcrumbs=array(
         ),
     ));
 ?>
+</div>
 
 <h3>Этапы проекта:</h3>
 <div class="StepMenu">
@@ -152,12 +194,23 @@ $this->breadcrumbs=array(
 </div>
 <div class="ProjectTable">
 <?php
-        $this->renderPartial('//smkProjectStep/index',array(
-            'model'=>$model,
-        ));
+    $this->renderPartial('//smkProjectStep/index',array(
+        'model'=>$model,
+    ));
 ?>
 </div>
+<?php
+    echo Chtml::button('Диаграмма Ганта \/',
+        array('name'=>'gantti_button',
+                //'style'=>'float:right'
+                'class'=>'gantti_button'
+            )
+        );
+?>
+<div class="Gantti" style="display:none">
 <?php
     echo $gantti;
 ?>
 </div>
+</div>
+

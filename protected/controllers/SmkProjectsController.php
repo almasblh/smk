@@ -10,7 +10,7 @@ class SmkProjectsController extends CAssaController
             'postOnly + delete', // we only allow deletion via POST request
 /*            array(
             'COutputCache',
-            'duration'=>100,
+            'duration'=>30,
             'varyByParam'=>array('id'),
             ),
  * 
@@ -62,44 +62,62 @@ class SmkProjectsController extends CAssaController
                         break;
                 }
             }
-            //if( isset($_GET['SmkProjectStep'])){
-            //    $steps_model->unsetAttributes();                
-            //    $steps_model->attributes = $_GET['SmkProjectStep'];
-            //}
-            //else
-            //    $steps_model->unsetAttributes();
-            
-            $model=SmkProjects::model()->findByPk($id); // загрузка данных для диаграммы Ганта
-            $stepName=SmkProjectStepName::model()->findAll();
-            foreach($model->SmkProjectStep() as $row=>$value){
-                $data[] = array(
-                    'label' => '(План) '.$stepName[$value['stepid']-1]->name,
-                    'start' => $value['datestart'], 
-                    'end'   => $value['datestop'],
+           
+            $model=SmkProjects::model()->findByPk($id);                         // загрузка модели проекта
+            if($model->approved==0){                                            // если план не утвержден
+                Yii::app()->cache->delete('SmkProjectsGant'.$model->id);        // то сбросить кеш для диаграммы Ганта для проекта
+            };
+            if(Yii::app()->cache->get('SmkProjectsGant'.$model->id)===false){   // Если кеша нет, то надо вновь просчитать диаграмму Ганта
+                $stepName=SmkProjectStepName::model()->findAll();
+                foreach($model->SmkProjectStep() as $row=>$value){
+                    $data[] = array(
+                        'label' => '(План) '.$stepName[$value['stepid']-1]->name,
+                        'start' => $value['datestart'], 
+                        'end'   => $value['datestop'],
+                    );
+                    if(isset($value['datestopfact'])) $class='stop';
+                    elseif(isset($value['datestartfact'])) $class='start';
+                    else $class='nostart'; 
+                    $data[] = array(
+                        'label' => '..........(Факт)',
+                        'start' => isset($value['datestartfact'])?$value['datestartfact']:$value['datestart'], 
+                        'end'   => isset($value['datestopfact'])?$value['datestopfact']:$value['datestart'],
+                        'class' => $class,
+                    );                
+                }
+                if(isset($data)){                                               // если данные есть - формируем класс
+                    $gantti = new gantti($data, array(
+                      'title'      => 'Этапы',
+                      'cellwidth'  => 20,
+                      'cellheight' => 22
+                    ));
+                }
+                else $gantti = '';                                              // иначе - формируем пустышку
+                Yii::app()->cache->set('ElBezQoestions-quest', $gantti);
+            }
+            $btnDefectColor=((Yii::app()->db->createCommand(                    //цвет кнопки Журнал дефектов
+                'SELECT((SELECT count(id) FROM defects_book db WHERE db.laststate=0 AND db.projectid='.$id.')/(SELECT count(id) FROM defects_book db WHERE db.projectid='.$id.')) as "col";'
+            )->queryRow()['col']));
+            $btnDefectColor=(isset($btnDefectColor) && $btnDefectColor<1)?'red':'';
+            if(Yii::app()->request->isAjaxRequest){
+                echo $value=$this->renderPartial('view',array(                      //отрендерим и запишем в переменную $value
+                    'model'=>$model,
+                    'gantti'=>$gantti,
+                    'btnDefectColor'=>$btnDefectColor
+                    ),
+                    true
                 );
-                if(isset($value['datestopfact'])) $class='stop';
-                elseif(isset($value['datestartfact'])) $class='start';
-                else $class='nostart'; 
-                $data[] = array(
-                    'label' => '..........(Факт)',
-                    'start' => isset($value['datestartfact'])?$value['datestartfact']:$value['datestart'], 
-                    'end'   => isset($value['datestopfact'])?$value['datestopfact']:$value['datestart'],
-                    'class' => $class,
-                );                
+                Yii::app()->cache->delete('SmkProjectSectionValue');                //Запишем в кеш, предварительно очистив его от старого содержимого
+                Yii::app()->cache->set('SmkProjectSectionValue',$value);
             }
-            if(isset($data)){                                                   // если данные есть - формируем класс
-                $gantti = new gantti($data, array(
-                  'title'      => 'Этапы',
-                  'cellwidth'  => 20,
-                  'cellheight' => 22
-                ));
+            else{
+                $this->render('view',array(                      //отрендерим и запишем в переменную $value
+                    'model'=>$model,
+                    'gantti'=>$gantti,
+                    'btnDefectColor'=>$btnDefectColor
+                    )
+                );
             }
-            else $gantti = '';                                                  // иначе - формируем пустышку
-            $this->render('view',array(
-                'model'=>$model,
-                //'steps_model'=>$steps_model,
-                'gantti'=>$gantti
-            ));
         }
        
 	public function actionCreate($id=0)                                     //создание нового проекта
@@ -116,7 +134,7 @@ class SmkProjectsController extends CAssaController
 		if(isset($_POST['SmkProjects']))                                //если форма заполнена - приступим к обработке
 		{
 			$model->attributes=$_POST['SmkProjects'];               //записать все атрибуты из формы в модель
-                        $model->managerid=Yii::app()->user->id;                 //записать текущего пользователя в менеджеры проекта (спорное утверждение надо подумать)
+                        //$model->managerid=Yii::app()->user->id;                 //записать текущего пользователя в менеджеры проекта (спорное утверждение надо подумать)
                         $model->signaturecreator=$a=Yii::app()->user->id;       //подпись создателя записи
                         if($model->date_make==0)                                //если проект создается вновь, то
                             $model->date_make=date("Y-m-d H:i:s", time());      //записать время создания проекта
@@ -130,7 +148,14 @@ class SmkProjectsController extends CAssaController
                             $modelcurator->signaturecreator=$model->signaturecreator;
                             $modelcurator->datecreaterecord=$model->datecreaterecord;
                             if($modelcurator->save())                            //при удачной записи в таблицу ролей
-                                $this->redirect(array('view','id'=>$model->id));//перейти на страницу проекта
+                                $modelmanager=new ServUsersRole;                    //запишем в таблицу ролей новоиспеченного куратора
+                                $modelmanager->userid=$model->managerid;
+                                $modelmanager->projectid=$model->id;
+                                $modelmanager->category=512;
+                                $modelmanager->signaturecreator=$model->signaturecreator;
+                                $modelmanager->datecreaterecord=$model->datecreaterecord;
+                                if($modelmanager->save())                            //при удачной записи в таблицу ролей
+                                    $this->redirect(array('view','id'=>$model->id));//перейти на страницу проекта
                         }
                         //иначе - показать форму ошибки формирования проекта
                         
@@ -178,9 +203,9 @@ class SmkProjectsController extends CAssaController
                             $modelRole->userid=$model->kuratorid;
                             $modelRole->projectid=$model->id;
                             $modelRole->category=1024;
-                            $modelRole->datestart=date("Y-m-d H:i:s", time());
+                            //$modelRole->datestart=date("Y-m-d H:i:s", time());
                             $modelRole->signaturecreator=Yii::app()->user->id;
-                            $modelRole->datecreaterecord=$modelRole->datestart;
+                            $modelRole->datecreaterecord=date("Y-m-d H:i:s", time());
                             $modelRole->save();
                         }
                                                                                 //2. закрыть роль старому куратору
@@ -243,16 +268,14 @@ class SmkProjectsController extends CAssaController
  * 
  */
         
-        public function actionIndex()
-	{
-                $model=new SmkProjects('search');
-		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['SmkProjects']))
-			$model->attributes=$_GET['SmkProjects'];
-
-		$this->render('index',array(
-			'model'=>$model,
-		));
+        public function actionIndex(){
+            $model=new SmkProjects('search');
+            $model->unsetAttributes();  // clear any default values
+            if(isset($_GET['SmkProjects']))
+                $model->attributes=$_GET['SmkProjects'];
+            $this->render('index',array(
+                'model'=>$model,
+            ));
 	}
         
     public function actionOtchets($id=0,$ncorrection=0){                        //модуль создания отчетов по внутренним испытаниям отдела испытаний

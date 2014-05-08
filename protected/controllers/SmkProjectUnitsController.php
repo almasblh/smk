@@ -75,12 +75,21 @@ class SmkProjectUnitsController extends CAssaController
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('SmkProjectUnits');
+	public function actionIndex($projectid=0){
+/*		$dataProvider=new CActiveDataProvider('SmkProjectUnits');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
+ * 
+ */
+            $model=new SmkProjectUnits('search');
+            $model->unsetAttributes();  // clear any default values
+            if(isset($_GET['SmkProjectUnits']))
+                $model->attributes=$_GET['SmkProjectUnits'];
+            $this->render('index',array(
+                'model'=>$model,
+                'projectid'=>$projectid
+            ));
 	}
 
 	public function actionAdmin()

@@ -30,6 +30,7 @@
     <div class="InputForm ui-widget-content"></div>
     <div id="mainmenu">
 <?php
+    $isGuest=Yii::app()->user->isGuest;
     if(!Yii::app()->user->isGuest){                                             //Если пользователь зарегистрирован
         $ac=Yii::app()->user->getState('activecategory');
         $ac= (isset($ac) && $ac>0) ? implode(", ", $ac) : '(не определено)';
@@ -41,23 +42,23 @@
             'items'=>array(                                                         //формируем стандартные пункты меню
                 array(  'label'=>'Главная',
                         'url'=>CHtml::normalizeUrl(array('site/index')),
-                        'visible'=>Yii::app()->user->isGuest
+                        'visible'=>$isGuest
                 ),
                 array(  'label'=>'Напишите нам',
                         'url'=>CHtml::normalizeUrl(array('site/contact')),
-                        'visible'=>Yii::app()->user->isGuest
+                        'visible'=>$isGuest
                 ),
                 array(  'label'=>'О системе',
                         'url'=>CHtml::normalizeUrl(array('site/About')),
-                        'visible'=>Yii::app()->user->isGuest
+                        'visible'=>$isGuest
                 ),
                 array(  'label'=>'Выход ('.Yii::app()->user->getState('username').')',
                         'url'=>CHtml::normalizeUrl(array('site/Logout')),
-                        'visible'=>!Yii::app()->user->isGuest
+                        'visible'=>!$isGuest
                 ),
                 array(  'label'=>'Сменить пароль',
                         'url'=>CHtml::normalizeUrl(array('site/passchange')),
-                        'visible'=>!Yii::app()->user->isGuest
+                        'visible'=>!$isGuest
                 ),
                 array(  'label'=>'Администрирование',
                         'url'=>CHtml::normalizeUrl(array('Administration/index')),
@@ -82,7 +83,7 @@
 </div><!-- breadcrumbs -->
 <div id="Activeproject">
 <?php
-/*    if(!Yii::app()->user->isGuest){
+    if(!Yii::app()->user->isGuest){
         $apsn=Yii::app()->user->getState('activeprojectstepname');
         echo '<h6 text-align: center>'
             .CHtml::ajaxLink(
@@ -108,16 +109,17 @@
             .(isset($apsn) ? $apsn : 'не выбран')
             .'</h6>';
     }
- * 
- */
 ?>
 </div>
 <div class="Menu">
     <?php
         $this->MenuButton('SmkProjects','index','Проекты');
         $this->MenuButton('SmkReklamation','index','Рекламации');
-        $this->MenuButton('OimPmiTests','index','ОИиМ');
-        $this->MenuButton('Konstrucktor','index','Констр');
+//        $this->MenuButton('OimPmiTests','index','ОИиМ');
+//        $this->MenuButton('Konstrucktor','index','Констр');
+        
+        $this->MenuButton('Site','Robokassa','Robokassa');
+        
         $this->MenuButton('Site','ProjectStepSendemail','Proj_S_mail');
         $this->MenuButton('Site','ReklamationSendemail','Rekl_S_mail');
         $abcd=ElbezUserCard::model()->findByAttributes(array('userid'=>Yii::app()->user->id));

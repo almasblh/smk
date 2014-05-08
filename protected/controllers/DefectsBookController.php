@@ -1,19 +1,13 @@
-
 <?php
-
 class DefectsBookController extends CAssaController
 {
 	public $layout='//layouts/column2';
 
-	/**
-	 * @return array action filters
-	 */
-	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-			'postOnly + delete', // we only allow deletion via POST request
-		);
+	public function filters(){
+            return array(
+                'accessControl', // perform access control for CRUD operations
+                'postOnly + delete', // we only allow deletion via POST request
+            );
 	}
 
     public function accessRules(){// правила доступа к ресурсам контроллера
@@ -31,149 +25,109 @@ class DefectsBookController extends CAssaController
             ),
         );
     }
-
-    public function actionCreate(){
-        $model=new DefectsBook;
-        if(isset($_POST['DefectsBook'])){
-            $model->attributes=$_POST['DefectsBook'];
-            if($model->save())
-                $this->redirect(array('view','id'=>$model->id));
-        }
-        $this->render('create',array(
-            'model'=>$model,
-        ));
-    }
-
-    public function actionUpdate($id){
-        $model=$this->loadModel($id);
-        if(isset($_POST['DefectsBook'])){
-            $model->attributes=$_POST['DefectsBook'];
-            if($model->save())
-                $this->redirect(array('view','id'=>$model->id));
-        }
-        $this->render('update',array(
-            'model'=>$model,
-        ));
-    }
-
-    public function actionDelete($id){
-        $this->loadModel($id)->delete();
-
-        // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
-        if(!isset($_GET['ajax']))
-                $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
-    }
-
-    public function actionView(){
-        $this->renderPartial(
-            '_view',
-            array(
-                'model'=>new DefectsBookStateDefect,
-                'defectid'=>$_GET['defectid']
-            )
-        );
-    }
     
-    public function actionIndex(){
-        if(Yii::app()->request->isAjaxRequest){// Если это AJAX - запрос, то обработаем
+	public function actionView($defectid){
+            $model = $this->loadModel($defectid);
+            $this->ActiveProjectSessionSave($model->projectid);
+            //Yii::app()->user->setState('activeproject',$model->projectid);
+            $modelstatus = new DefectsBookState();
+            $modelstatus->unsetAttributes();  // clear any default values
+            if(isset($_GET['DefectsBookStatus'])) $modelstatus->attributes=$_GET['DefectsBookStatus'];
+            $this->render('view',array(
+                'model'=>$model,
+                'modelstatus'=> $modelstatus,//->srcView($model->id),//   $this->loadModelStatus($model->id),
+                'defectid'=>$defectid
+            ));
+	}
+	public function actionCreate($projectid){
+		$model=new DefectsBook;
+		if(isset($_POST['DefectsBook'])){
+                    $model->attributes=$_POST['DefectsBook'];
+                    $model->projectid=$_GET['projectid'];
+                    $model->createdate=date("Y-m-d H:i:s", time());
+                    $model->autorid=Yii::app()->user->id;
+                    $model->laststate=1;
+                    if(isset($_POST['chkbox_users_email_copy1'])) $users_email_copy[]=$_POST['users_email_copy1'];
+                    if(isset($_POST['chkbox_users_email_copy2'])) $users_email_copy[]=$_POST['users_email_copy2'];
+                    if(isset($_POST['chkbox_users_email_copy3'])) $users_email_copy[]=$_POST['users_email_copy3'];
+                    if(isset($_POST['chkbox_users_email_copy4'])) $users_email_copy[]=$_POST['users_email_copy4'];
+                    if(isset($_POST['chkbox_users_email_copy5'])) $users_email_copy[]=$_POST['users_email_copy5'];
+                    if($model->save()){
+                        $users[0]=$model->touserid;
+                        $this->Send_Email(//отправить емайл кому направлен дефект
+                            $users,                                             //кому
+                            $users_email_copy,                                //кому копии
+                            'Уведомление от СМК по дефекту №'.$model->id,      //тема письма
+                            'new',                                              //шаблон письма
+                            $model,                                             //данные
+                            'defect',                                           //путь - определяет путь к шаблону
+                            0,                                                   //срок окончания. если <0 то просрочено
+                            Yii::app()->user->id                                // отправлено от зарегистрированного пользователя (требование подтверждения получения)
+                        );
+                        $this->redirect(array('index',
+                                'id'=>$projectid,
+                                //'model'=>$model,
+                                //'project'=>SmkProjects::model()->findByPk($projectid)
+                            )
+                        );
+                    }
+		}
+		$this->renderPartial('crup_form',array(
+                    'model'=>$model,
+                    'projectid'=>$projectid
+		));
+	}
+	public function actionUpdate($id){
+            $model=$this->loadModel($id);
+            if(isset($_POST['DefectsBook']))
+            {
+                $model->attributes=$_POST['DefectsBook'];
+                if($model->save())
+                    $this->redirect(array('view','id'=>$model->id));
+            }
 
-            Yii::app()->end();
-        }
-        else
-        {   if(!Yii::app()->user->getState('activeproject')){
-                //echo CJavaScript::quote(ShowMessage('Не выбран активный проект.'));
-                $this->redirect(array('SmkProjects/select'));
-            }   
+            $this->render('update',array(
+                    'model'=>$model,
+            ));
+	}
+	public function actionDelete($id){
+		$this->loadModel($id)->delete();
+		if(!isset($_GET['ajax']))
+			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
+	}
+	public function actionIndex($id=0){
+            if($id==0) $id=Yii::app()->user->getState('activeproject');
+            if($id==0) $this->redirect(array('/SmkProjects/index'));
+            
+            $project=SmkProjects::model()->findByPk($id);
+            $model=new DefectsBook();
+            $model->unsetAttributes();  // clear any default values
+            if(isset($_GET['DefectsBook']))
+                    $model->attributes=$_GET['DefectsBook'];
+            $this->render('index',array(
+                'model'=>$model,
+                'project'=>$project
+            ));
+	}
+	public function actionAdmin(){
             $model=new DefectsBook('search');
             $model->unsetAttributes();  // clear any default values
-            if(isset($_GET['DefectsBook'])) $model->attributes=$_GET['DefectsBook'];
-            $this->render('index',
-                        array(
-                            'model'=>$model,
-                        )
-                    );
-        }
-    }
-
-    public function loadModel($id)
-    {
-        $model=DefectsBook::model()->findByPk($id);
-        if($model===null)
-            throw new CHttpException(404,'The requested page does not exist.');
-        return $model;
-    }
-
-    protected function performAjaxValidation($model)
-    {
-        if(isset($_POST['ajax']) && $_POST['ajax']==='defects-book-form')
-        {
-            echo CActiveForm::validate($model);
-            Yii::app()->end();
-        }
-    }
-    
-    public function actionAddnewdefect()
-    {
-        if(isset($_POST['NewDefectForm']))
-        {
-            $model= new DefectsBook;//()->with('DefectsBookStateDefect');
-
-            //$model->attributes=$_POST['NewDefectForm'];
-            $model->mnemoid=$_POST['NewDefectForm']['mnemoid'];
-            $model->nodeid=$_POST['NewDefectForm']['nodeid'];
-            $model->describe=$_POST['NewDefectForm']['describe'];
-            $model->tocategoryid=$_POST['NewDefectForm']['tocategoryid'];
-            $model->touserid=$_POST['NewDefectForm']['touserid'];
-            $model->projectid=Yii::app()->user->getState('activeproject');
-            $model->autorid=Yii::app()->user->id;
-            $model->curstate=0;
-            $model->createdate=date("Y-m-d H:i:s", time());
-
-            if($model->save())
-            {
-                $model1= new DefectsBookStateDefect;
-                $model1->defectid=$model->id;
-                $model1->state=$model->curstate;
-                $model1->comment=$_POST['NewDefectForm']['comment'];
-                $model1->date=$model->createdate;
-                $model1->signatureuserid=$model->autorid;
-                $model1->tocategoryid=$model->tocategoryid;
-                $model1->touserid=$model->touserid;
-
-                if($model1->save()){
-//                    $this->redirect(CHtml::normalizeUrl(array('index')));
-                    $this->renderPartial(
-                        '_none_form',
-                        array(
-                            'model'=>new NewDefectForm,
-                        )
-                    );
-                    Yii::app()->end();
-                }
-                else{
-                    $this->redirect(CHtml::normalizeUrl(array('index')));
-                    $this->renderPartial(
-                        '_none_form',
-                        array(
-                            'model'=>new NewDefectForm,
-                        )
-                    );
-                    Yii::app()->end();
-                }
+            if(isset($_GET['DefectsBook']))
+                $model->attributes=$_GET['DefectsBook'];
+            $this->render('admin',array(
+                'model'=>$model,
+            ));
+	}
+	public function loadModel($id){
+            $model=DefectsBook::model()->findByPk($id);
+            if($model===null)
+                throw new CHttpException(404,'The requested page does not exist.');
+            return $model;
+	}
+	protected function performAjaxValidation($model){
+            if(isset($_POST['ajax']) && $_POST['ajax']==='defects-book-form'){
+                echo CActiveForm::validate($model);
+                Yii::app()->end();
             }
-            else{
-                $this->redirect(CHtml::normalizeUrl(array('index')));
-            }
-        }
-        else{
-            $this->renderPartial(
-                '_newdefect',
-                array(
-                    'model'=>new NewDefectForm,
-                )
-            );
-        }
-    }    
-    
-    
+	}
 }

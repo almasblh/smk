@@ -13,10 +13,6 @@
 	<?php echo CHtml::encode($data->projectid); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('systemid')); ?>:</b>
-	<?php echo CHtml::encode($data->systemid); ?>
-	<br />
-
 	<b><?php echo CHtml::encode($data->getAttributeLabel('unitid')); ?>:</b>
 	<?php echo CHtml::encode($data->unitid); ?>
 	<br />
