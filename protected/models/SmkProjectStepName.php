@@ -1,6 +1,6 @@
 <?php
 
-class SmkProjectStepName extends CActiveRecord
+class SmkProjectStepName extends CAssaRecord
 {
 
 	public static function model($className=__CLASS__)

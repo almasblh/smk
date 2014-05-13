@@ -103,6 +103,71 @@ class CAssaController extends Controller
             }
         }
     }
+    public function ExtMenuButton($param){
+        $name=(isset($param['name']))?$param['name']:'';
+        $title=(isset($param['title']))?$param['title']:'';                     //Наименование кнопки
+        $controller=(isset($param['controller']))?$param['controller']:'';      //Имя контроллера
+        $action=(isset($param['action']))?$param['action']:'';                  //Имя акции
+        $par=(isset($param['par']))?$param['par']:'';                           //Параметры
+        $SubjectType=(isset($param['SubjectType']))?$param['SubjectType']:'';   //тип окна заполнения данными "ajax","PopUpWin","NewWin"
+        $div=(isset($param['div']))?$param['div']:'';                           //тег окна заполнения
+        $bkcolor=(isset($param['bkcolor']))?$param['bkcolor']:'';               //цвет оформления кнопки (если '' - то по умолчанию)
+        
+        $htmloptions=($bkcolor<>'')?('border: 4px solid '.$bkcolor.';'):'';
+        //$htmloptions.=($name<>'')?('name '.$name.';'):'';
+        $param = $par=='' ? '' : '&'.$par;
+        if($this->EnableForCurrentUser($controller,$action)){                   // проверка на допуск пользователя к данной кнопке
+            switch($SubjectType){
+                case 'ajax':                                                    // если это ajax кнопка
+                    echo $a=CHtml::ajaxButton(                                     // то вывод ajax
+                            $title,
+                            array($controller.'/'.$action.$param),
+                            array('type' => 'POST',
+                                'update' =>$div,
+                                'cache'=>true
+                            ),
+                            array('name'=>$name,
+                                'style'=>$htmloptions
+                            )
+                    );
+                break;
+                case 'PopUpWin':
+                    echo CHtml::link(
+                            CHtml::button($title),
+                            array($controller.'/'.$action.$param)
+                            ,array(
+                                'onclick'=>'window.open(
+                                    this.href,
+                                    \'\',
+                                    \'scrollbars,menubar,location,width=400,height=300,top=0\'
+                                ); win.focus(); return false'
+    //                                \'menubar=no,resizable=no,scrollbars=no,status=no,location,width=400,height=300,top=0\'
+                            ),
+                    array('style'=>$htmloptions)
+                    );
+                break;
+                case 'NewWin':                                                  //создание нового окна
+                    echo CHtml::link(
+                            CHtml::button($title),
+                            array($controller.'/'.$action.$param),
+                            array(
+                               'target'=>"_blank",
+                                'name'=>$name
+                            ),
+                            array('style'=>$htmloptions)
+                    );
+                break;
+                default:                                                        //иначе вывод простой кнопки
+                    echo CHtml::link(
+                            CHtml::button($title),
+                            array($controller.'/'.$action.$param),
+                            array('name'=>$name,
+                                'style'=>$htmloptions)
+                    );
+                break;
+            }
+        }
+    }
        
     //метод нахождения разрешенных действий для конкретного контроллера текущего пользователя
     // на входе:

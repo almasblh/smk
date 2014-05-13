@@ -79,12 +79,14 @@
             echo $form->dropDownList(
                     $model,
                     'curatorid',
-                   // $model->GetUsersList()
-                    CHtml::listData(
+                   $model->GetUsersList()
+/*                    CHtml::listData(
                         ServUsers::model()->findAll(),
                         'id',
                         'FIO'
                     )
+ * 
+ */
                 );
             echo $form->error($model,'curatorid');
         ?>

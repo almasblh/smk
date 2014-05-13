@@ -31,9 +31,16 @@ class SmkReklamationStatusController extends CAssaController
 
 	public function actionView($id)
 	{
+            if(isset($_GET['par']) && $_GET['par']='viewcomment'){
+                $this->renderPartial('viewcomment',array(
+                    'model'=>$this->loadModel($id),
+		));
+            }
+            else{
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
 		));
+            };
 	}
 
 	public function actionCreate()

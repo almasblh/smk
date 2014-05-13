@@ -105,6 +105,7 @@ class SmkProjectsController extends CAssaController
                     'gantti'=>$gantti,
                     'btnDefectColor'=>$btnDefectColor
                     ),
+                    true,
                     true
                 );
                 Yii::app()->cache->delete('SmkProjectSectionValue');                //Запишем в кеш, предварительно очистив его от старого содержимого
@@ -247,35 +248,22 @@ class SmkProjectsController extends CAssaController
 
 	public function actionDelete($id)
 	{
-            //SmkProjectStep::model()->loadModel($id)->delete();
-            //$this->redirect(CHtml::normalizeUrl(array('SmkProjectStep/delete','id'=>$id)));
-            
             $this->loadModel($id)->delete();
 
-		// if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
 		if(!isset($_GET['ajax']))
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
-/*
-	public function actionIndex()
-	{
-		$dataProvider=new CActiveDataProvider('SmkProjects');
-                //$percent=
-		$this->render('index',array(
-			'dataProvider'=>$dataProvider,
-		));
-	}
- * 
- */
         
         public function actionIndex(){
             $model=new SmkProjects('search');
             $model->unsetAttributes();  // clear any default values
             if(isset($_GET['SmkProjects']))
                 $model->attributes=$_GET['SmkProjects'];
-            $this->render('index',array(
-                'model'=>$model,
-            ));
+            $this->render(
+                    'index',array(
+                    'model'=>$model,
+                )
+            );
 	}
         
     public function actionOtchets($id=0,$ncorrection=0){                        //модуль создания отчетов по внутренним испытаниям отдела испытаний

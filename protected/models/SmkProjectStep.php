@@ -1,6 +1,6 @@
 <?php
 
-class SmkProjectStep extends CActiveRecord
+class SmkProjectStep extends CAssaRecord
 {
         public $listKorrection=array(0);
         public $projkuratorid;
@@ -141,14 +141,17 @@ class SmkProjectStep extends CActiveRecord
             public function getDateStart($data, $row, $grid){
             if((Yii::app()->user->id==217) || ($this->projkuratorid == Yii::app()->user->id)){
                 $a=CHtml::ajaxLink(
-                        CHtml::button($data->datestart,
-                            array('style'=>'width:120px')
-                        ),
-                        CHtml::normalizeUrl(array("SmkProjectStep/update","id"=>$data->id)),
-                        array('type' => 'POST',
-                            'update' => '.InputForm'
-                        )
-                    );
+                    CHtml::button($data->datestart,
+                        array('style'=>'width:120px')
+                    ),
+                    CHtml::normalizeUrl(array("SmkProjectStep/update","id"=>$data->id)),
+                    array('type' => 'POST',
+                        'update' => '.SmkProjectStepIndexInputForm'
+                    ),
+                    array(
+                        'name'=>'btnStart'.$data->id
+                    )
+                );
             }
             else(
                 $a=$data->datestart
@@ -164,9 +167,12 @@ class SmkProjectStep extends CActiveRecord
                         ),
                         CHtml::normalizeUrl(array("SmkProjectStep/update","id"=>$data->id)),
                         array('type' => 'POST',
-                            'update' => '.InputForm'
-                        )
-                    );
+                            'update' => '.SmkProjectStepIndexInputForm'
+                        ),
+                    array(
+                        'name'=>'btnStop'.$data->id
+                    )
+                );
             }
             else{
                 $a=$data->datestop;
@@ -182,9 +188,12 @@ class SmkProjectStep extends CActiveRecord
                         ),
                         CHtml::normalizeUrl(array("SmkProjectStep/update","id"=>$data->id)),
                         array('type' => 'POST',
-                            'update' => '.InputForm'
-                        )
-                    );
+                            'update' => '.SmkProjectStepIndexInputForm'
+                        ),
+                    array(
+                        'name'=>'btnStepCurator'.$data->id
+                    )
+                );
             }
             else{
                 $a=CHtml::link(CHtml::encode($data->ServUsersStepCurator["FIO2"]),array("ServUsers/view","id"=>$data->curatorid));

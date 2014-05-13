@@ -1,3 +1,4 @@
+<div class="SmkProjectStepIndexInputForm"></div>
 <?php
     $render ='function() {
         var url = $(this).attr(\'href\');

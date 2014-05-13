@@ -18,6 +18,7 @@ $this->breadcrumbs=array(
             $this->MenuButton('SmkReklamation','view','УДАЛИТЬ из рассылки','id='.$model->id.'&task=0');
     ?>
 </div>
+<div class="MoreComment ui-widget-content"></div>
 <?php
     $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,

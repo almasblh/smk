@@ -1,6 +1,6 @@
 <?php
 
-class SmkProjectStepcuratorJurnal extends CActiveRecord
+class SmkProjectStepcuratorJurnal extends CAssaRecord
 {
 
 	public static function model($className=__CLASS__)

@@ -7,13 +7,15 @@ $this->breadcrumbs=array(
 ?>
 <h1>Шкафы проекта
     <?php
-        echo Yii::app()->user->GetState('activeprojectname');
+        $projectid=Yii::app()->user->GetState('activeproject');
+        echo Yii::app()->user->GetState('activeprojectname').'ПГВР №'.$projectid;
     ?>
 </h1>
 
 <div class="Menu">
     <?php
-        $this->MenuButton('SmkProjectUnits','create','Добавить еще шкаф','id='.$model->id,'ajax','.InputForm');
+        $this->MenuButton('SmkProjects','view','Проект','id='.$projectid);
+        $this->MenuButton('SmkProjectUnits','create','Добавить еще шкаф','id='.$projectid,'ajax','.InputForm');
     ?>
 </div>
 <?php $this->widget('zii.widgets.grid.CGridView', array(

@@ -1,6 +1,6 @@
 <?php
 
-class SmkProjectUnits extends CActiveRecord
+class SmkProjectUnits extends CAssaRecord
 {
         public $actions;
     

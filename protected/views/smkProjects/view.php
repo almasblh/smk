@@ -7,6 +7,7 @@
     }
 </style>
 <?php
+
 Yii::app()->clientScript->registerCssFile(Yii::app()->request->baseUrl .'/css/gantti/gantti.css');
 Yii::app()->clientScript->registerScript('moreinfo', "
 $('.more_button').click(function(){
@@ -43,32 +44,6 @@ $this->breadcrumbs=array(
                 return false;
         });
     ");
-//------------JS-----------------------------------
-// функция отображения Записей журнала на странице
-    $js_jurnal_view ='function() {
-        var url = $(this).attr(\'href\');
-        $.get(url, function(response) {
-            $("#jurnal").html(response);
-        });
-        return false;
-    }';
-// функция создания новой записи в журнале
-    $js_jurnal_create_record ='function() {
-        var url = $(this).attr(\'href\');
-        $.get(url, function(response) {
-            $("#jurnal").html(response);
-        });
-        return false;
-    }';
-// функция редактирования 
-    $js_project_step_update ='function() {
-        var url = $(this).attr(\'href\');
-        $.get(url, function(response) {
-            $("#jurnal").html(response);
-        });
-        return false;
-    }';
-//------------JS-----------------------------------
 ?>
 
 <h2>Проект №<?php echo Yii::app()->user->getState('activeprojectname').', '.'ПГВР № '.Yii::app()->user->getState('activeprojectpgvr')?></h2>
@@ -82,22 +57,68 @@ $this->breadcrumbs=array(
 ?>
 <div class="Menu">
 <?php
-    //$this->MenuButton('SmkProjects','index','Проекты');
-    $this->MenuButton('SmkProjects','otchets','Вывести план в Excel','id='.Yii::app()->user->getState('activeproject').'&sw=pgvr&korrect=0');
-    $this->MenuButton('SmkProjects','update','Редактировать план','id='.$model->id,'ajax','.InputForm');
+    $this->ExtMenuButton(array(
+        'name'=>'btnProject',
+        'controller'=>'SmkProjects',
+        'action'=>'view',
+        'title'=>'Проект',
+        'par'=>'id='.$model->id
+    ));
+    $this->ExtMenuButton(array(
+        'name'=>'btnEditProject',
+        'controller'=>'SmkProjects',
+        'action'=>'update',
+        'title'=>'Редактировать план',
+        'par'=>'id='.$model->id,
+        'SubjectType'=>'ajax',
+        'div'=>'.SmkProjectInputForm'
+    ));
     $rid=Yii::app()->db->createCommand('SELECT userid AS `0` FROM smk_project_email_list WHERE userid='.Yii::app()->user->id.' AND projectid='.$model->id.';')->queryRow();
+    $this->ExtMenuButton(array(
+        'controller'=>'DefectsBook',
+        'action'=>'index',
+        'title'=>'Журнал дефектов',
+        'par'=>'id='.$model->id,
+        'bkcolor'=>$btnDefectColor
+    ));
+    $this->ExtMenuButton(array(
+        'controller'=>'SmkProjectUnits',
+        'action'=>'index',
+        'title'=>'Список шкафов'
+    ));
+    $this->ExtMenuButton(array(
+        'controller'=>'Konstrucktor',
+        'action'=>'index',
+        'title'=>'Констр'
+    ));
+    $this->ExtMenuButton(array(
+        'controller'=>'OimPmiTests',
+        'action'=>'index',
+        'title'=>'ОИиМ'
+    ));
+    $this->ExtMenuButton(array(
+        'controller'=>'SmkProjects',
+        'action'=>'otchets',
+        'title'=>'Вывести план в Excel',
+        'par'=>'id='.Yii::app()->user->getState('activeproject').'&sw=pgvr&korrect=0'
+    ));
     if(!isset($rid[0]))
-        $this->MenuButton('SmkProjects','view','ВКЛЮЧИТЬ в рассылку','id='.$model->id.'&email=1');
+        $this->ExtMenuButton(array(
+            'controller'=>'SmkProjects',
+            'action'=>'view',
+            'title'=>'ВКЛЮЧИТЬ в рассылку',
+            'par'=>'id='.$model->id.'&email=1'
+        ));
     else
-        $this->MenuButton('SmkProjects','view','УДАЛИТЬ из рассылки','id='.$model->id.'&email=0');
-    $this->MenuButton('DefectsBook','index','Журнал дефектов','id='.$model->id,'','',$btnDefectColor);
-    $this->MenuButton('Konstrucktor','index','Констр');
-    $this->MenuButton('SmkProjectUnits','index','Список шкафов');
-    $this->MenuButton('OimPmiTests','index','ОИиМ');
-
-
+        $this->ExtMenuButton(array(
+            'controller'=>'SmkProjects',
+            'action'=>'view',
+            'title'=>'УДАЛИТЬ из рассылки',
+            'par'=>'id='.$model->id.'&email=0'
+        ));
 ?>
 </div>
+<div class="SmkProjectInputForm ui-widget-content"></div>
 <div class="ProjectInfo">  
 <?php
     $this->widget('zii.widgets.CDetailView', array(
@@ -114,14 +135,11 @@ $this->breadcrumbs=array(
             'object',
             array('name'=>'path',
                 'type'=>'html',
-                'value'=>//CHtml::link($model->path,
-                            $model->path
+                'value'=>$model->path
             ),
             array('name'=>'kuratorid',
                 'type'=>'html',
-                'value'=>CHtml::link(CHtml::encode($model->kurator["FIO2"]),
-                            array("ServUsers/view","id"=>$model->kuratorid)
-                        )
+                'value'=>$model->getUserLink($model->kurator),
             ),
             array('name'=>'managerid',
                 'type'=>'html',
@@ -139,6 +157,7 @@ $this->breadcrumbs=array(
                 'value'=> sprintf('%.2f',$model->percentage_complet),
                 'cssClass'=>($model->percentage_complet<0) ? 'redBackground' : '',
             ),
+
         ),
     ));
     echo Chtml::button('еще инфо \/',
@@ -189,14 +208,27 @@ $this->breadcrumbs=array(
 <h3>Этапы проекта:</h3>
 <div class="StepMenu">
     <?php
-        $this->MenuButton('SmkProjectStep','create','Добавить еще этап','projectid='.$model->id,'ajax','.InputForm');
+        $this->ExtMenuButton(array(
+            'name'=>'btnAddNewStepProject',
+            'controller'=>'SmkProjectStep',
+            'action'=>'create',
+            'title'=>'Добавить еще этап',
+            'par'=>'projectid='.$model->id,
+            'SubjectType'=>'ajax',
+            'div'=>'.SmkProjectStepInputForm'
+        ));
     ?>
 </div>
+<div class="SmkProjectStepInputForm"></div>
 <div class="ProjectTable">
 <?php
-    $this->renderPartial('//smkProjectStep/index',array(
-        'model'=>$model,
-    ));
+    $this->renderPartial(
+        '//smkProjectStep/index',array(
+            'model'=>$model,
+        )//,
+        //false,
+        //true
+    );
 ?>
 </div>
 <?php

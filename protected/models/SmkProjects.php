@@ -173,10 +173,7 @@ class SmkProjects extends CAssaRecord
         }
 
         public function getManagerLine(){
-            $a=CHtml::link(CHtml::encode($this->manager["FIO2"]),
-                                array("ServUsers/view","id"=>$this->managerid)
-                            );
-            
+            $a=$this->getUserLink($this->manager);
             if($this->signaturemanagerid){
                 $a.=' - - <span style=color:white;background-color:green;">Согласовано<span>';
                 if(Yii::app()->user->id==$this->managerid && $this->approved==0){
@@ -199,9 +196,8 @@ class SmkProjects extends CAssaRecord
         }
         
         public function getshefOUPLine(){
-            $a=CHtml::link(CHtml::encode($this->shefOUP["FIO2"]),
-                                array("ServUsers/view","id"=>$this->signatureshefOUPid)
-                            );
+            $a='';
+            if(isset($this->shefOUP)) $a.=$this->getUserLink($this->shefOUP);
             if($this->signatureshefOUPid){
                 $a.=' - - <span style=color:white;background-color:green;">Согласовано<span>';
                 if(Yii::app()->user->id==$this->signatureshefOUPid && $this->approved==0){
@@ -277,8 +273,16 @@ class SmkProjects extends CAssaRecord
             $G=str_pad(dechex($G), 2, "0", STR_PAD_LEFT);
             $B=str_pad(dechex($B), 2, "0", STR_PAD_LEFT);
             return array('style'=>'background-color:'."#$R$G$B");
-        } 
-
+        }
+        
+        public function getUserLink($data){
+            $a=CHtml::link(
+                CHtml::encode($data->GetUsersFIO2($data->id)),
+                "http://intranet.sintek.net/phone/newwin.php?menu_marker=si_employeeview&dn=CN=".$data->GetUsersFIO($data->id).",OU=".$data->GetReestrOfficeLocate($data->officelocate).",OU=SINTEK,DC=intranet-sintek,DC=net",
+                array('target'=>'_blank')
+            );
+            return $a;
+        }
 
     public function search(){
         $criteria=new CDbCriteria;

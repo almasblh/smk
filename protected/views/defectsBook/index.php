@@ -7,10 +7,26 @@
 <h2>Журнал дефектов по проектуПГВР №<?php echo $project->Npgvr.' '.$project->Name; ?></h2>
 <div class="Menu">
 <?php
-        $this->MenuButton('SmkProjects','view','Проект','id='.$project->id);
-        $this->MenuButton('DefectsBook','create','Добавить новый дефект','projectid='.$project->id,'ajax','.InputForm');
+
+        $this->ExtMenuButton(array(
+            'name'=>'btnProject',
+            'controller'=>'SmkProjects',
+            'action'=>'view',
+            'title'=>'Проект',
+            'par'=>'id='.$project->id
+        ));
+        $this->ExtMenuButton(array(
+            'name'=>'btnAddNewDefect',
+            'controller'=>'DefectsBook',
+            'action'=>'create',
+            'title'=>'Добавить новый дефект',
+            'par'=>'projectid='.$project->id,
+            'SubjectType'=>'ajax',
+            'div'=>'.DefectsBookInputForm'
+        ));
 ?>
 </div>
+<div class="DefectsBookInputForm"></div>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'defects-book-grid',
 	'dataProvider'=>$model->search($project->id),

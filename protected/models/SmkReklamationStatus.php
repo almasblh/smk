@@ -135,18 +135,18 @@ class SmkReklamationStatus extends CAssaRecord
         return array('style'=>'background-color:'."#$R$G$B");
     } 
         public function getComent($data, $row, $grid){
-            $str='<p class="layer300" title="'.$data->comment.'">';
+            $a=substr($data->comment,0,20);
+            $str='<p class="layer300" title="'.$a.'">';
+            if(strlen($data->comment)>200){
+                $str.=Chtml::ajaxLink(
+                        "More>>",
+                        CHtml::normalizeUrl(array("SmkReklamationStatus/view",'id'=>$data->id,'par'=>'viewcomment')),
+                        array('type' => 'POST',
+                              'update' =>'.MoreComment',
+                        )
+                    ).'</br>';
+            }
             $str.=$data->comment;
-/*            $str.=$data->aktpath
-                     ? CHtml::link(CHtml::image('./images/document3232.png','file'),
-                            array('/Viewfiles',
-                              'path' => 'reklamation/'.$data->aktpath
-                            ),
-                            array('target'=>'_blank')
-                            )
-                    : "";
- * 
- */
             $str.='</p>';
             return $str;
         }        

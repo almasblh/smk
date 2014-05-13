@@ -5,7 +5,11 @@
 ?>
 
 <h1>Список шкафов проекта</h1>
-
+<div class="Menu">
+    <?php
+        $this->MenuButton('SmkProjects','view','Проект','id='.Yii::app()->user->GetState('activeproject'));
+    ?>
+</div>
 <?php
     $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'smk-project-units-grid'
