@@ -43,25 +43,35 @@ class DefectsBookController extends CAssaController
 		$model=new DefectsBook;
 		if(isset($_POST['DefectsBook'])){
                     $model->attributes=$_POST['DefectsBook'];
+                    Yii::app()->user->setState('NewDefectToUser',$model->touserid);//записать адресата в сессию
                     $model->projectid=$_GET['projectid'];
                     $model->createdate=date("Y-m-d H:i:s", time());
                     $model->autorid=Yii::app()->user->id;
                     $model->laststate=1;
+                    $users_email_copy=0;
                     if(isset($_POST['chkbox_users_email_copy1'])) $users_email_copy[]=$_POST['users_email_copy1'];
                     if(isset($_POST['chkbox_users_email_copy2'])) $users_email_copy[]=$_POST['users_email_copy2'];
                     if(isset($_POST['chkbox_users_email_copy3'])) $users_email_copy[]=$_POST['users_email_copy3'];
                     if(isset($_POST['chkbox_users_email_copy4'])) $users_email_copy[]=$_POST['users_email_copy4'];
                     if(isset($_POST['chkbox_users_email_copy5'])) $users_email_copy[]=$_POST['users_email_copy5'];
+                    $cardImage = \CUploadedFile::getInstance($model,'attachepath'); // загружаем картинку-файл во временную папку
+                    if(isset($cardImage)){
+                        $path=time().'-'.$cardImage->name;
+                        $model->attachepath=$path;
+                    }
                     if($model->save()){
+                        if(isset($cardImage)){                                  // записываем наш файл в необходимую папку, это строчка обязательно должна быть в if`е,
+                            $cardImage->saveAs('data/defects/files/'.$path);
+                        }
                         $users[0]=$model->touserid;
                         $this->Send_Email(//отправить емайл кому направлен дефект
                             $users,                                             //кому
-                            $users_email_copy,                                //кому копии
+                            $users_email_copy,                                  //кому копии
                             'Уведомление от СМК по дефекту №'.$model->id,      //тема письма
                             'new',                                              //шаблон письма
                             $model,                                             //данные
                             'defect',                                           //путь - определяет путь к шаблону
-                            0,                                                   //срок окончания. если <0 то просрочено
+                            0,                                                  //срок окончания. если <0 то просрочено
                             Yii::app()->user->id                                // отправлено от зарегистрированного пользователя (требование подтверждения получения)
                         );
                         $this->redirect(array('index',
@@ -71,7 +81,14 @@ class DefectsBookController extends CAssaController
                             )
                         );
                     }
+                    $model->touserid=Yii::app()->user->getState('NewDefectToUser'); //взять адресата из сессии
+                    $this->render('crup_form',array(
+                        'model'=>$model,
+                        'projectid'=>$projectid
+                    ));
+                    Yii::app()->end();
 		}
+                $model->touserid=Yii::app()->user->getState('NewDefectToUser'); //взять адресата из сессии
 		$this->renderPartial('crup_form',array(
                     'model'=>$model,
                     'projectid'=>$projectid

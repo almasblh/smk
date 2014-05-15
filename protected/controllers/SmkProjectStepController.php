@@ -69,8 +69,9 @@ class SmkProjectStepController extends CAssaController
                     $model->datecreaterecord=date("Y-m-d H:i:s", time());
                     $model->ncorrect+=1;
                     $model->signaturecurator=0;
-                    //$a=SmkProjectStep::model()->
-                    //$model->agreed=0;
+                    $model->ordern=((Yii::app()->db->createCommand(             //расчитать порядковый номер новой записи
+                        'SELECT (SELECT COALESCE(max(sps.ordern),0) FROM smk_project_step sps WHERE sps.projectid='.$projectid.')+1 as i;'
+                    )->queryRow()['i']));
                     $model->nexttimemail=$model->datecreaterecord;              //время следующей почтовой раасылки - сейчас
                     if($model->save()){                                         //запись в таблицу этапров проекта
                         //запись роли ответственного исполнителя в таблицу его ролей

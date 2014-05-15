@@ -65,32 +65,32 @@ class ServUsers extends CActiveRecord
                     'criteria'=>$criteria,
                     'pagination'=>array(
                         'pageSize' => Yii::app()->params['postsPerPage']),
-                    'sort'=>array('attributes'=>array(
-                                    'fname'=>array(
-                                        'asc' => $expr='fname',
-                                        'desc' => $expr.' DESC',
-                                    ),
-                                    'sname'=>array(
-                                        'asc' => $expr='sname',
-                                        'desc' => $expr.' DESC',
-                                    ),
-                                    'tname'=>array(
-                                        'asc' => $expr='tname',
-                                        'desc' => $expr.' DESC',
-                                    ),
-                                    'Dolgnost'=>array(
-                                        'asc' => $expr='ServUsersDolgnost.name',
-                                        'desc' => $expr.' DESC',
-                                    ),
-                                    'Category'=>array(
-                                        'asc' => $expr='ServUsersCategory.name',
-                                        'desc' => $expr.' DESC',
-                                    ),
-                                    'Departament'=>array(
-                                        'asc' => $expr='ServUsersDepartament.name',
-                                        'desc' => $expr.' DESC',
-                                    ),
-                    ))
+                        'sort'=>array('attributes'=>array(
+                            'fname'=>array(
+                                'asc' => $expr='fname',
+                                'desc' => $expr.' DESC',
+                            ),
+                            'sname'=>array(
+                                'asc' => $expr='sname',
+                                'desc' => $expr.' DESC',
+                            ),
+                            'tname'=>array(
+                                'asc' => $expr='tname',
+                                'desc' => $expr.' DESC',
+                            ),
+                            'Dolgnost'=>array(
+                                'asc' => $expr='ServUsersDolgnost.name',
+                                'desc' => $expr.' DESC',
+                            ),
+                            'Category'=>array(
+                                'asc' => $expr='ServUsersCategory.name',
+                                'desc' => $expr.' DESC',
+                            ),
+                            'Departament'=>array(
+                                'asc' => $expr='ServUsersDepartament.name',
+                                'desc' => $expr.' DESC',
+                            ),
+                        ))
 		));
 	}
     public function getFIO(){

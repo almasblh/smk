@@ -68,9 +68,10 @@ return array(
             ),
          ),
         'user'=>array(
-            //'class' => 'WebUser',
+            'class' => 'WebUser',
             'allowAutoLogin'=>true,                                             // enable cookie-based authentication
-            //'loginUrl'=>array('site/login')
+            'loginUrl'=>array('site/login'),
+            'myReturnUrl'=>array('site/index'),
         ),
         // uncomment the following to enable URLs in path-format
         /*

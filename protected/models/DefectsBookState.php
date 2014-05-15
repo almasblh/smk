@@ -46,7 +46,7 @@ class DefectsBookState extends CAssaRecord
 			array('defectid, projectid, date, signaturecreatorid', 'required'),
 			array('defectid, touserid, projectid', 'length', 'max'=>11),
 			array('state', 'length', 'max'=>1),
-			array('comment', 'length', 'max'=>255),
+			array('comment, attachepathstate', 'length', 'max'=>255),//, attachepathstate
 			array('signaturecreatorid', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
@@ -79,34 +79,30 @@ class DefectsBookState extends CAssaRecord
 			'date' => 'Дата',
 			'signaturecreatorid' => 'Подпись',
 			'touserid' => 'Перенаправлено',
+                        'attachepathstate'=>'Прил.'
 		);
 	}
 
-	/**
-	 * Retrieves a list of models based on the current search/filter conditions.
-	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
-	 */
-	public function search($defectid)
-	{
-		// Warning: Please modify the following code to remove attributes that
-		// should not be searched.
+    public function search($defectid){
+        $criteria=new CDbCriteria;
 
-		$criteria=new CDbCriteria;
+        $criteria->compare('id',$this->id,true);
+        $criteria->compare('defectid',$defectid,true);
+        $criteria->compare('state',$this->state,true);
+        $criteria->compare('comment',$this->comment,true);
+        $criteria->compare('date',$this->date,true);
+        $criteria->compare('signaturecreatorid',$this->signaturecreatorid,true);
+        $criteria->compare('touserid',$this->touserid,true);
+        $criteria->order = 'id ASC';
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('defectid',$defectid,true);
-		$criteria->compare('state',$this->state,true);
-		$criteria->compare('comment',$this->comment,true);
-		$criteria->compare('date',$this->date,true);
-		$criteria->compare('signaturecreatorid',$this->signaturecreatorid,true);
-		$criteria->compare('touserid',$this->touserid,true);
-
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
-	}
+        return new CActiveDataProvider($this, array(
+            'criteria'=>$criteria,
+        ));
+    }
         
     public function getRowHtmlOptions($row, $data, $grid){
+        $RT=0;$GT=0;$BT=0;
+        $R=255;$G=255;$B=255;
         switch($data->state){
             case 0:
                 $R=0;$G=255;$B=0;
@@ -121,13 +117,20 @@ class DefectsBookState extends CAssaRecord
                 $R=0;$G=255;$B=255;
                 break;
             case 4:
-                $R=255;$G=150;$B=150;
+                $R=255;$G=0;$B=0;
+                $RT=255;$GT=255;$BT=255;
                 break;
+            case 5:
+                $R=200;$G=200;$B=200;
+                break; 
         }
         $R=str_pad(dechex($R), 2, "0", STR_PAD_LEFT);
         $G=str_pad(dechex($G), 2, "0", STR_PAD_LEFT);
         $B=str_pad(dechex($B), 2, "0", STR_PAD_LEFT);
-        $value=array('style'=>'background-color:'."#$R$G$B");
+        $RT=str_pad(dechex($RT), 2, "0", STR_PAD_LEFT);
+        $GT=str_pad(dechex($GT), 2, "0", STR_PAD_LEFT);
+        $BT=str_pad(dechex($BT), 2, "0", STR_PAD_LEFT);
+        $value=array('style'=>'background-color:'."#$R$G$B".';color:'."#$RT$GT$BT");
         return $value;
     }
 }

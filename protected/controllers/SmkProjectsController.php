@@ -47,6 +47,7 @@ class SmkProjectsController extends CAssaController
                 else
                     return;//здесь надо вывести ошибку что ничего нет exeption!!!!!!!
             };
+            
             if( isset($_GET['projectstep'])                                     //записать активный этап
                 && $_GET['projectstep']>0
                     && $_GET['projectstep']<>Yii::app()->user->getState('activeprojectstep')
@@ -62,8 +63,47 @@ class SmkProjectsController extends CAssaController
                         break;
                 }
             }
-           
             $model=SmkProjects::model()->findByPk($id);                         // загрузка модели проекта
+            if(isset($_GET['gantti']) && $_GET['gantti']=='view'){
+//                if($model->approved==0){                                            // если план не утвержден
+//                    Yii::app()->cache->delete('SmkProjectsGant'.$model->id);        // то сбросить кеш для диаграммы Ганта для проекта
+//                };
+//                if(Yii::app()->cache->get('SmkProjectsGant'.$model->id)===false){   // Если кеша нет, то надо вновь просчитать диаграмму Ганта
+                    $stepName=SmkProjectStepName::model()->findAll();
+                    foreach($model->SmkProjectStep() as $row=>$value){
+                        $data[] = array(
+                            'label' => '(План) '.$stepName[$value['stepid']-1]->name,
+                            'start' => $value['datestart'], 
+                            'end'   => $value['datestop'],
+                        );
+                        if(isset($value['datestopfact'])) $class='stop';
+                        elseif(isset($value['datestartfact'])) $class='start';
+                        else $class='nostart'; 
+                        $data[] = array(
+                            'label' => '..........(Факт)',
+                            'start' => isset($value['datestartfact'])?$value['datestartfact']:$value['datestart'], 
+                            'end'   => isset($value['datestopfact'])?$value['datestopfact']:$value['datestart'],
+                            'class' => $class,
+                        );                
+                    }
+                    if(isset($data)){                                               // если данные есть - формируем класс
+                        $gantti = new gantti($data, array(
+                          'title'      => 'Этапы',
+                          'cellwidth'  => 20,
+                          'cellheight' => 22
+                        ));
+                    }
+                    else $gantti = '';                                              // иначе - формируем пустышку
+//                    Yii::app()->cache->set('ElBezQoestions-quest', $gantti);
+//                }
+                $this->renderPartial('gantti',array(                      //отрендерим и запишем в переменную $value
+//                    'model'=>$model,
+                    'gantti'=>$gantti,
+                    )
+                );
+                Yii::app()->end();
+            }
+/*                
             if($model->approved==0){                                            // если план не утвержден
                 Yii::app()->cache->delete('SmkProjectsGant'.$model->id);        // то сбросить кеш для диаграммы Ганта для проекта
             };
@@ -95,6 +135,8 @@ class SmkProjectsController extends CAssaController
                 else $gantti = '';                                              // иначе - формируем пустышку
                 Yii::app()->cache->set('ElBezQoestions-quest', $gantti);
             }
+ * 
+ */
             $btnDefectColor=((Yii::app()->db->createCommand(                    //цвет кнопки Журнал дефектов
                 'SELECT((SELECT count(id) FROM defects_book db WHERE db.laststate=0 AND db.projectid='.$id.')/(SELECT count(id) FROM defects_book db WHERE db.projectid='.$id.')) as "col";'
             )->queryRow()['col']));
@@ -102,7 +144,7 @@ class SmkProjectsController extends CAssaController
             if(Yii::app()->request->isAjaxRequest){
                 echo $value=$this->renderPartial('view',array(                      //отрендерим и запишем в переменную $value
                     'model'=>$model,
-                    'gantti'=>$gantti,
+                    //'gantti'=>$gantti,
                     'btnDefectColor'=>$btnDefectColor
                     ),
                     true,
@@ -114,7 +156,7 @@ class SmkProjectsController extends CAssaController
             else{
                 $this->render('view',array(                      //отрендерим и запишем в переменную $value
                     'model'=>$model,
-                    'gantti'=>$gantti,
+                    //'gantti'=>$gantti,
                     'btnDefectColor'=>$btnDefectColor
                     )
                 );
@@ -159,7 +201,9 @@ class SmkProjectsController extends CAssaController
                                     $this->redirect(array('view','id'=>$model->id));//перейти на страницу проекта
                         }
                         //иначе - показать форму ошибки формирования проекта
-                        
+                        $this->render('_form',array(
+                            'model'=>$model,
+                        ));
                         //Yii::app()->end();
 		}
 		$this->renderPartial('_form',array(

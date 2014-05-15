@@ -512,7 +512,6 @@ class SiteController extends CAssaController
 	}
         
         public function actionLogin(){
-            //Yii::app()->cache->delete('users_list');
             $model=new LoginForm;
             if(isset($_POST['ajax']) && $_POST['ajax']==='login-form'){
                     echo CActiveForm::validate($model);

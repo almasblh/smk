@@ -32,7 +32,6 @@
 ?>
 <div class="Menu">
     <?php
-        //$this->MenuButton('SmkProjects','create','Создать новый проект','','ajax','.InputForm');
         $this->ExtMenuButton(array(
             'name'=>'btnAddNewProjects',
             'controller'=>'SmkProjects',

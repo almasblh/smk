@@ -237,14 +237,12 @@ class SmkProjectStep extends CAssaRecord
     public function srchProject($id=0,$cur=0){
         $this->projkuratorid=$cur;
         $criteria=new CDbCriteria;
-        $criteria->compare('projectid',$id,true);
-        $criteria->compare('ncorrect',$this->ncorrect,true);
-        $criteria->compare('current_persent',$this->current_persent,true);
+        $criteria->condition = 'projectid='.$id;
        
         $criteria->order='t.ordern';
         $a= new CActiveDataProvider($this, array(
             'criteria'=>$criteria,
-            'pagination'=>array('pageSize' => Yii::app()->params['postsPerPage']),
+            'pagination'=>array('pageSize' =>32),//array('pageSize' => Yii::app()->params['postsPerPage']),
         ));
         return $a;
     } 

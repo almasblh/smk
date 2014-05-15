@@ -124,7 +124,7 @@ class CAssaRecord extends CActiveRecord
         if($id<>-1) return $list[$id];
         else        return $list;
     }
-    public function GetPriorityList($id=-1){                                    //Кешированный список всех мнемосхем
+    public function GetPriorityList($id=-1){                                    //Кешированный список всех приоритетов дефектов
         $list=Yii::app()->cache->get('PriorityList');
         if($list===false)
             {   $list=array('1'=>'Высокая','2'=>'Средняя','3'=>'Низкая','4'=>'Пожелание');
@@ -133,13 +133,26 @@ class CAssaRecord extends CActiveRecord
         if($id<>-1) return $list[$id];
         else        return $list;
     }
-    public function GetDefectStatusList($id=-1){                                    //Кешированный список всех мнемосхем
+    public function GetDefectStatusList($id=-1){                                    //Кешированный список всех статусов дефекта
         $list=Yii::app()->cache->get('DefectStatusList');
         if($list===false)
-            {   $list=array('0'=>'Закрыто','1'=>'Открыто','2'=>'Исправлено','3'=>'Отклонено','4'=>'Переоткрыто');
+            {   $list=array('0'=>'Закрыто','1'=>'Открыто','2'=>'Исправлено','3'=>'Отклонено','4'=>'Переоткрыто','5'=>'Перенаправлено');
                 Yii::app()->cache->set('DefectStatusList',$list,3600);
             }
         if($id<>-1) return $list[$id];
         else        return $list;
+    }
+    
+    public function getUserLink($userid=0){
+        if(!$userid) return '';
+        $data=ServUsers::model()->findByPk($userid);
+        $b=$this->GetReestrOfficeLocate($data->officelocate);
+        $c=$this->GetUsersFIO($userid);
+        $a=CHtml::link(
+            CHtml::encode($this->GetUsersFIO2($userid)),
+            "http://intranet.sintek.net/phone/newwin.php?menu_marker=si_employeeview&dn=CN=".$c.",OU=".$b.",OU=SINTEK,DC=intranet-sintek,DC=net",
+            array('target'=>'_blank')
+        );
+        return $a;
     }
 }

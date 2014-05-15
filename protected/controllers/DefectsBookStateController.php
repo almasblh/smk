@@ -81,8 +81,20 @@ class DefectsBookStateController extends CAssaController
                 $model->projectid=DefectsBook::model()->findByPk($defectid)->projectid;
                 $model->date=date("Y-m-d H:i:s", time());
                 $model->signaturecreatorid=Yii::app()->user->id;
+                $cardImage = \CUploadedFile::getInstance($model,'attachepathstate'); // загружаем картинку-файл во временную папку
+                if(isset($cardImage)){
+                    $path=time().'-'.$cardImage->name;
+                    $model->attachepathstate=$path;
+                }
                 if($model->save()){
-                    DefectsBook::model()->updateByPk($defectid,array('laststate'=>$model->state,'touserid'=>($_GET['par']==0)?0:$model->touserid));
+                    if(isset($cardImage)){                                  // записываем наш файл в необходимую папку, это строчка обязательно должна быть в if`е,
+                        $cardImage->saveAs('data/defects/files/'.$path);
+                    }
+                    DefectsBook::model()->updateByPk($defectid,array(           //обновить поля самого дефекта
+                        'laststate'=>$model->state,
+                        'touserid'=>($_GET['par']==0)?0:$model->touserid,
+                        'priority'=>$_POST['DefectsBook']['priority']
+                    ));
                     if($model->state<>0){
                         $users[0]=$model->touserid;
                         $this->Send_Email(//отправить емайл кому направлен дефект
@@ -105,7 +117,8 @@ class DefectsBookStateController extends CAssaController
             }
             $this->renderPartial('crup_form',array(
                 'model'=>$model,
-                'autorid'=>DefectsBook::model()->findByPk($defectid,array('select'=>'autorid'))['autorid']
+                'defectmodel'=>DefectsBook::model()->findByPk($defectid),
+                //'autorid'=>DefectsBook::model()->findByPk($defectid,array('select'=>'autorid'))['autorid']
             ));
 	}
 

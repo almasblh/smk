@@ -18,13 +18,12 @@
         $this->MenuButton('DefectsBook','index','Дефекты');
 ?>
 </div>
-
 <h3>Дефект №<?php echo $model->id.' '; ?>по проекту ПГВР №<?php echo $model->project['Npgvr'].' '.$model->project['Name']; ?></h3>
+<div class="DefectsBookInfoInputForm"></div>
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-            array('name'=>'describe',
-                'cssClass'=>'DefectsBookDescribe'
+            array('name'=>'where',
             ),
             array('name'=>'mnemoid',
                 'value'=>$model->GetMnemoList($model->mnemoid),
@@ -32,13 +31,31 @@
             array('name'=>'unitid',
                 'value'=>$model->GetUnitList($model->unitid),
             ),
+            array('name'=>'describe',
+                'cssClass'=>'DefectsBookDescribe'
+            ),
+            array('name'=>'linkrd',
+            ),
+            array('name'=>'attachepath',
+                'type'=>'raw',
+                'value'=>(isset($model->attachepath)&& $model->attachepath<>"")?
+                CHtml::link(CHtml::image('./images/document3232.png','file'),
+                    array('/Viewfiles',
+                      'path' => 'defects/files/'.$model->attachepath
+                    ),
+                    array('target'=>'_blank')
+                    )
+                :'-',
+            ),
             array('name'=>'priority',
                 'value'=>$model->GetPriorityList($model->priority),
             ),
             array('name'=>'defectvedomostid',
+                'value'=>$model->defectvedomostid?$model->defectvedomostid:'-'
             ),
             array('name'=>'autorid',
-                'value'=>$model->GetUsersFIO2($model->autorid),
+                'type'=>'raw',
+                'value'=>$model->getUserLink($model->autorid),
             ),
             array('name'=>'createdate',
             ),
@@ -46,16 +63,18 @@
                 'value'=>$model->GetDefectStatusList($model->laststate),
             ),
             array('name'=>'touserid',
-                'value'=>($model->touserid<>0)?$model->GetUsersFIO2($model->touserid):'-',
+                'type'=>'raw',
+                'value'=>($model->touserid<>0)?$model->getUserLink($model->touserid):'-',
             ),
 	),
     ));
 ?>
 
-<?php $this->widget('zii.widgets.grid.CGridView', array(
+<?php
+    $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'defects-book-grid',
 	'dataProvider'=>$modelstatus->search($defectid),
-	'filter'=>$modelstatus,
+	//'filter'=>$modelstatus,
         'rowHtmlOptionsExpression'=>array($modelstatus,'getRowHtmlOptions'),    //метод модели
 	'columns'=>array(
             array('name'=>'id',
@@ -80,33 +99,90 @@
                     'style'=>'width:60%;text-align:center',
                 )
             ),
+            array('name'=>'attachepathstate',
+                'type'=>'raw',
+                'value'=>'(isset($data->attachepathstate)&& $data->attachepathstate<>"")?
+                    CHtml::link(CHtml::image("./images/document3232.png","file"),
+                        array("/Viewfiles",
+                          "path" => "defects/files/".$data->attachepathstate
+                        ),
+                        array("target"=>"_blank")
+                        )
+                    :"-"',
+                'htmlOptions'=>array(
+                    'style'=>'width:2%;text-align:center',
+                )
+            ),
             array('name'=>'signaturecreatorid',
-                'value'=>'$data->GetUsersFIO2($data->signaturecreatorid)',
+                'type'=>'raw',
+                'value'=>'$data->getUserLink($data->signaturecreatorid)',
                 'filter'=>$model->GetUsersList(),
                 'htmlOptions'=>array(
                     'style'=>'width:120px;text-align:center',
                 )
             ),
             array('name'=>'touserid',
-                'value'=>'($data->touserid<>0)?$data->GetUsersFIO2($data->touserid):"-"',//'$data->GetUsersFIO2($data->touserid)',
+                'type'=>'raw',
+                'value'=>'($data->touserid<>0)?$data->getUserLink($data->touserid):"-"',//'$data->GetUsersFIO2($data->touserid)',
                 'filter'=>$model->GetUsersList(),
                 'htmlOptions'=>array(
                     'style'=>'width:120px;text-align:center',
                 )
             ),
-    ),
-));
+        ),
+    ));
 ?>
 <div class="Menu">
 <?php
     if($model->laststate<>0){
         if(Yii::app()->user->id==$model->touserid){    
-            $this->MenuButton('DefectsBookState','create','Иправить','par=2&defectid='.$defectid,'ajax','.InputForm');
-            $this->MenuButton('DefectsBookState','create','Отклонить','par=3&defectid='.$defectid,'ajax','.InputForm');
+            $this->ExtMenuButton(array(
+                'name'=>'btnFix',
+                'controller'=>'DefectsBookState',
+                'action'=>'create',
+                'title'=>'Иправить',
+                'par'=>'par=2&defectid='.$defectid,
+                'SubjectType'=>'ajax',
+                'div'=>'.DefectsBookInfoInputForm'
+            ));
+            $this->ExtMenuButton(array(
+                'name'=>'btnRedirect',
+                'controller'=>'DefectsBookState',
+                'action'=>'create',
+                'title'=>'Перенаправить',
+                'par'=>'par=5&defectid='.$defectid,
+                'SubjectType'=>'ajax',
+                'div'=>'.DefectsBookInfoInputForm'
+            ));
+            $this->ExtMenuButton(array(
+                'name'=>'btnReject',
+                'controller'=>'DefectsBookState',
+                'action'=>'create',
+                'title'=>'Отклонить',
+                'par'=>'par=3&defectid='.$defectid,
+                'SubjectType'=>'ajax',
+                'div'=>'.DefectsBookInfoInputForm'
+            ));
         }
         if(Yii::app()->user->id==$model->autorid){    
-            $this->MenuButton('DefectsBookState','create','Переоткрыть','par=4&defectid='.$defectid,'ajax','.InputForm');
-            $this->MenuButton('DefectsBookState','create','Закрыть','par=0&defectid='.$defectid,'ajax','.InputForm');
+            $this->ExtMenuButton(array(
+                'name'=>'btnReopen',
+                'controller'=>'DefectsBookState',
+                'action'=>'create',
+                'title'=>'Переоткрыть',
+                'par'=>'par=4&defectid='.$defectid,
+                'SubjectType'=>'ajax',
+                'div'=>'.DefectsBookInfoInputForm'
+            ));
+            $this->ExtMenuButton(array(
+                'name'=>'btnClose',
+                'controller'=>'DefectsBookState',
+                'action'=>'create',
+                'title'=>'Закрыть',
+                'par'=>'par=0&defectid='.$defectid,
+                'SubjectType'=>'ajax',
+                'div'=>'.DefectsBookInfoInputForm'
+            ));
         }
     }
 ?>

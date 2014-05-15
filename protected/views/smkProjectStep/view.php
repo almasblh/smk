@@ -8,8 +8,25 @@ $this->breadcrumbs=array(
 <div class="Menu">
 <?php
         $contr=$model->SmkProjectStepName['ServControllers']['name'];
-        $this->MenuButton($contr,'view',$model->SmkProjectStepName['name'],'id='.$model->projectid);
-        $this->MenuButton('DefectsBook','index','Журнал дефектов','id='.$model->projectid);
+        $this->ExtMenuButton(array(
+            'name'=>'btnProject',
+            'controller'=>'SmkProjects',
+            'action'=>'view',
+            'title'=>'Проект',
+            'par'=>'id='.$model->projectid
+        ));
+        $this->ExtMenuButton(array(
+            'controller'=>$contr,
+            'action'=>'view',
+            'title'=>$model->SmkProjectStepName['name'],
+            'par'=>'id='.$model->projectid
+        ));
+        $this->ExtMenuButton(array(
+            'controller'=>'DefectsBook',
+            'action'=>'index',
+            'title'=>'Журнал дефектов',
+            'par'=>'id='.$model->projectid
+        ));
 ?>
 </div>
 <?php
@@ -33,10 +50,20 @@ $this->breadcrumbs=array(
 <h2>Журнал этапа</h2>
 <div class="Menu">
 <?php
-    if(Yii::app()->user->id==$model->curatorid || Yii::app()->user->id==217)
-        $this->MenuButton('SmkProjectStepcuratorJurnal','create','Добавить запись','id='.$model->id,'ajax','.InputForm');
+    if(Yii::app()->user->id==$model->curatorid || Yii::app()->user->id==217){
+        $this->ExtMenuButton(array(
+            'name'=>'btnAddNewRecInStepcuratorJurnal',
+            'controller'=>'SmkProjectStepcuratorJurnal',
+            'action'=>'create',
+            'title'=>'Добавить запись',
+            'par'=>'id='.$model->id,
+            'SubjectType'=>'ajax',
+            'div'=>'.SmkProjectStepcuratorJurnalInputForm'
+        ));
+    }
 ?>
 </div>
+<div class="SmkProjectStepcuratorJurnalInputForm"></div>
 <?php
     $this->widget('zii.widgets.grid.CGridView', array(
         'id'=>'jurnal-steps-grid',

@@ -15,12 +15,14 @@ $('.more_button').click(function(){
     return false;
 });
 ");
-Yii::app()->clientScript->registerScript('gantti', "
+/*Yii::app()->clientScript->registerScript('gantti', "
 $('.Gantti_button').click(function(){
     $('.gantti').toggle();
     return false;
 });
 ");
+ * 
+ */
 $this->breadcrumbs=array(
 	'Список проектов'=>array('index'),
 	$model->Name,
@@ -225,24 +227,31 @@ $this->breadcrumbs=array(
     $this->renderPartial(
         '//smkProjectStep/index',array(
             'model'=>$model,
-        )//,
-        //false,
-        //true
+        )
     );
 ?>
 </div>
 <?php
-    echo Chtml::button('Диаграмма Ганта \/',
+/*    echo Chtml::button('Диаграмма Ганта \/',
         array('name'=>'gantti_button',
                 //'style'=>'float:right'
                 'class'=>'gantti_button'
             )
         );
+ * 
+ */
+    echo Chtml::ajaxbutton(
+        'Диаграмма Ганта \/',
+        CHtml::normalizeUrl(array('SmkProjects/view&gantti=view&id='.$model->id)),
+        array(
+            'type' => 'POST',
+            'update' =>'.GanttiView',
+        ),
+        array('name'=>'gantti_button',
+                'class'=>'gantti_button'
+            )
+        );
 ?>
-<div class="Gantti" style="display:none">
-<?php
-    echo $gantti;
-?>
-</div>
+<div class="GanttiView"></div>
 </div>
 

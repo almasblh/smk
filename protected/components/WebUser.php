@@ -1,6 +1,7 @@
 <?php
 class WebUser extends CWebUser {
     private $_model = null;
+    public $myReturnUrl;
  
     function getUseHttps() {
         if($user = $this->getModel()){
@@ -15,5 +16,11 @@ class WebUser extends CWebUser {
         }
         return $this->_model;
     }
+
+    public function beforeLogin() {
+        $this->setReturnUrl($this->getReturnUrl($this->myReturnUrl));
+        return true;
+    }
 }
+
 ?>

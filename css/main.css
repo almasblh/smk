@@ -414,6 +414,37 @@ div.catcontrol td {
     padding: 5 10 20 10;
 }
 
+.Form #Body form div.errorSummary
+{
+	border: 2px solid #C00;
+	padding: 7px 7px 12px 7px;
+	margin: 0 0 20px 0;
+	background: #FEE;
+	font-size: 0.9em;
+}
+
+.Form #Body form div.errorMessage
+{
+	color: red;
+	font-size: 0.9em;
+}
+
+.Form #Body form div.errorSummary p
+{
+	margin: 0;
+	padding: 5px;
+}
+
+.Form #Body form div.errorSummary ul
+{
+	margin: 0;
+	padding: 0 0 0 20px;
+}
+
+
+
+
+
 input[type=button], input[type=submit]{
     background: -moz-linear-gradient(to top, #a4ddff, #63869a);
     background: -webkit-linear-gradient(to top, #a4ddff, #63869a);

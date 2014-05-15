@@ -16,6 +16,7 @@
     $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'defects-book-state-form',
 	'enableAjaxValidation'=>false,
+        'htmlOptions' =>array('enctype'=>'multipart/form-data')                 // говорим что форма может работать с файлами
     ));
 ?>
 <?php echo $form->errorSummary($model); ?>
@@ -30,6 +31,16 @@
                 echo $form->error($model,'comment');
             ?>
 	</div>
+        <div class="row">
+            <?php
+                echo $form->labelEx($defectmodel,'priority');
+                echo $form->dropDownList($defectmodel,
+                    'priority',
+                    $defectmodel->GetPriorityList()
+                );
+                echo $form->error($defectmodel,'priority');
+            ?>
+        </div>
 	<div class="row">
             <?php
                 if($_GET['par']<>0){
@@ -38,13 +49,20 @@
                         'touserid',
                         $model->GetUsersList(),
                         array(
-                            'options'=>array( $autorid=> Array('selected' => 'selected')),
+                            'options'=>array( $defectmodel->autorid=> Array('selected' => 'selected')),
                         )
                     );
                     echo $form->error($model,'touserid');
                 }
             ?>
 	</div>
+        <div class="row">
+            <?php
+                echo 'Если есть необходимость - можно приложить скан документа';
+                echo $form->fileField($model,'attachepathstate');
+                echo $form->error($model,'attachepathstate');
+            ?>
+        </div>
         <div class="row buttons">
             <?php echo CHtml::submitButton(
                         $model->isNewRecord ? 'Создать' : 'Обновить',

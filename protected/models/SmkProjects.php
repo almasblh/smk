@@ -108,6 +108,9 @@ class SmkProjects extends CAssaRecord
                                 ('SmkProjects/view&id='.$data->id))),
                             array('type' => 'POST',
                                 'update' =>'.SmkProjectsSection'
+                            ),
+                            array(
+                                'name'=>'projlink'.$data->id
                             )
                         );
         }
@@ -333,18 +336,21 @@ class SmkProjects extends CAssaRecord
     }
     public function srch($par=0){
         $criteria=new CDbCriteria;
-        if($par){
-            switch ($par){
-                case 'open':
-                    $criteria->condition = 'percentage_complet<100';
-                    break;
-                case 'close':
-                    $criteria->condition = 'percentage_complet >=100';
-                    break;
-                case 'nogaranty':
-                    //$criteria->condition = 'percentage_complet = :userId AND date_create < NOW()';
-                    break;
-            }
+        switch ($par){
+            case 'open':
+                $criteria->condition = 'percentage_complet<100';
+                break;
+            case 'close':
+                $criteria->condition = 'percentage_complet >=100';
+                break;
+            case 'nogaranty':
+                //$criteria->condition = 'percentage_complet = :userId AND date_create < NOW()';
+                break;
+            case 'all':
+                break;
+            default :
+                $criteria->condition = 'percentage_complet<100';
+            break;
         }
         $criteria->compare('Name',$this->Name,true);
         $criteria->compare('Npgvr',$this->Npgvr,true);
