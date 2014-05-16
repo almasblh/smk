@@ -63,7 +63,7 @@
                 echo $form->error($model,'attachepathstate');
             ?>
         </div>
-        <div class="row buttons">
+        <div class="buttons">
             <?php echo CHtml::submitButton(
                         $model->isNewRecord ? 'Создать' : 'Обновить',
                         array('style'=>'float:right')

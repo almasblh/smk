@@ -1,9 +1,17 @@
+<style>
+    .DefectsBookShowDefect{
+        position: absolute;
+        width: 90%;
+
+
+        z-index: 9;
+    }
+</style>
 <?php
     $this->breadcrumbs=array(
-            'Defects Books',
+            'Журнал дефектов',
     );
 ?>
-
 <h2>Журнал дефектов по проектуПГВР №<?php echo $project->Npgvr.' '.$project->Name; ?></h2>
 <div class="Menu">
 <?php
@@ -26,14 +34,15 @@
 ?>
 </div>
 <div class="DefectsBookInputForm"></div>
+<div class="DefectsBookShowDefect ui-widget-content"></div>
 <?php
-    echo CHtml::link('Все',
+    echo CHtml::link('<Все>',
             array('index','par'=>'all')
     ).' ';
-    echo CHtml::link('Открытые',
+    echo CHtml::link('<В работе>',
             array('index','par'=>'open')
     ).' ';
-    echo CHtml::link('Закрытые',
+    echo CHtml::link('<Закрытые>',
             array('index','par'=>'close')
     ).' ';
         
@@ -44,8 +53,15 @@
         'rowHtmlOptionsExpression'=>array($model,'getRowHtmlOptions'),          //метод модели
 	'columns'=>array(
             array('name'=>'id',
-                'type'=>'html',
-                'value'=>'CHtml::link($data->id,array("/DefectsBook/view","defectid"=>$data->id))',
+                'type'=>'raw',
+//                'value'=>'CHtml::link($data->id,array("/DefectsBook/view","defectid"=>$data->id))',
+                'value'=>'CHtml::ajaxlink(
+                        $data->id,
+                        array("/DefectsBook/view","defectid"=>$data->id),
+                        array("type"=>"POST",
+                            "update"=>".DefectsBookShowDefect"
+                        )
+                    )',
                 'htmlOptions'=>array(
                     'style'=>'width:2%',
                 )
@@ -82,8 +98,34 @@
                 )
             ),
             array('name'=>'describe',
+/*                'type'=>'raw',
+                'value'=>'CHtml::ajaxlink(
+                        $data->describe,
+                        array("/DefectsBook/view","defectid"=>$data->id),
+                        array("type"=>"POST",
+                            "update"=>".DefectsBookShowDefect"
+                        )
+                    )',
+ * 
+ */
                 'htmlOptions'=>array(
-                    'style'=>'width:50%;text-align:center',
+                    'style'=>'width:50%;',
+                )
+            ),
+            array('name'=>'attachepath',
+                'type'=>'raw',
+                'value'=>'
+                (isset($data->attachepath)&& $data->attachepath<>"")?
+                CHtml::link(CHtml::image(\'./images/document3232.png\',\'file\'),
+                    array(\'/Viewfiles\',
+                      \'path\' => \'defects/files/\'.$data->attachepath
+                    ),
+                    array(\'target\'=>\'_blank\')
+                    )
+                :\'-\'
+                ',
+                'htmlOptions'=>array(
+                    'style'=>'width:2%;text-align:center',
                 )
             ),
             array('name'=>'linkrd',

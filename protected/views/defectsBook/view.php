@@ -69,7 +69,7 @@
 	),
     ));
 ?>
-
+<h5>Этапы</h5>
 <?php
     $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'defects-book-grid',

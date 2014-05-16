@@ -77,7 +77,7 @@ class DefectsBookState extends CAssaRecord
 			'state' => 'Состояние',
 			'comment' => 'Коментарий',
 			'date' => 'Дата',
-			'signaturecreatorid' => 'Подпись',
+			'signaturecreatorid' => 'от кого',
 			'touserid' => 'Перенаправлено',
                         'attachepathstate'=>'Прил.'
 		);

@@ -62,10 +62,6 @@ class DefectsBookStateController extends CAssaController
         );
     }
 
-    /**
-	 * Displays a particular model.
-	 * @param integer $id the ID of the model to be displayed
-	 */
 	public function actionView($id)
 	{
 		$this->render('view',array(
@@ -108,31 +104,22 @@ class DefectsBookStateController extends CAssaController
                             Yii::app()->user->id                                // отправлено от зарегистрированного пользователя (требование подтверждения получения)
                         );
                     };
-                    $this->redirect(array('DefectsBook/view',
-                            'defectid'=>$defectid
-                                //'model'=>$model,
-                                //'project'=>SmkProjects::model()->findByPk($projectid)
+                    $modeldefect=DefectsBook::model()->findByPk($defectid);
+                    $project=SmkProjects::model()->findByPk($modeldefect->projectid);
+                    $this->redirect(array('DefectsBook/index',
+                        'defectid'=>$defectid
                     ));
                 }
             }
             $this->renderPartial('crup_form',array(
                 'model'=>$model,
                 'defectmodel'=>DefectsBook::model()->findByPk($defectid),
-                //'autorid'=>DefectsBook::model()->findByPk($defectid,array('select'=>'autorid'))['autorid']
             ));
 	}
 
-	/**
-	 * Updates a particular model.
-	 * If update is successful, the browser will be redirected to the 'view' page.
-	 * @param integer $id the ID of the model to be updated
-	 */
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-
-		// Uncomment the following line if AJAX validation is needed
-		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['DefectsBookState']))
 		{
@@ -146,11 +133,6 @@ class DefectsBookStateController extends CAssaController
 		));
 	}
 
-	/**
-	 * Deletes a particular model.
-	 * If deletion is successful, the browser will be redirected to the 'admin' page.
-	 * @param integer $id the ID of the model to be deleted
-	 */
 	public function actionDelete($id)
 	{
 		$this->loadModel($id)->delete();
@@ -160,15 +142,8 @@ class DefectsBookStateController extends CAssaController
 			$this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('admin'));
 	}
 
-	/**
-	 * Lists all models.
-	 */
 	public function actionIndex($defectid)
 	{
-//		$dataProvider=new CActiveDataProvider('DefectsBookState');
-//		$this->render('index',array(
-//			'dataProvider'=>$dataProvider,
-//		));
                 $model=new DefectsBookState('search');
 		$model->unsetAttributes();  // clear any default values
 		if(isset($_GET['DefectsBookState']))
@@ -180,9 +155,6 @@ class DefectsBookStateController extends CAssaController
 		));
 	}
 
-	/**
-	 * Manages all models.
-	 */
 	public function actionAdmin()
 	{
 		$model=new DefectsBookState('search');
@@ -195,13 +167,6 @@ class DefectsBookStateController extends CAssaController
 		));
 	}
 
-	/**
-	 * Returns the data model based on the primary key given in the GET variable.
-	 * If the data model is not found, an HTTP exception will be raised.
-	 * @param integer $id the ID of the model to be loaded
-	 * @return DefectsBookState the loaded model
-	 * @throws CHttpException
-	 */
 	public function loadModel($id)
 	{
 		$model=DefectsBookState::model()->findByPk($id);
@@ -210,10 +175,6 @@ class DefectsBookStateController extends CAssaController
 		return $model;
 	}
 
-	/**
-	 * Performs the AJAX validation.
-	 * @param DefectsBookState $model the model to be validated
-	 */
 	protected function performAjaxValidation($model)
 	{
 		if(isset($_POST['ajax']) && $_POST['ajax']==='defects-book-state-form')
